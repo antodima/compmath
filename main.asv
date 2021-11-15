@@ -1,0 +1,7 @@
+clear variables;
+
+monks1_filename = 'datasets/monks/monks-1.train';
+monks1_train = readtable(monks1_filename,'FileType','text');
+monks1_train = monks1_train
+
+
