@@ -1,5 +1,5 @@
 # compmath
-Project of [Computational Mathematics forLearning and Data Analysis](https://esami.unipi.it/esami2/programma.php?c=50477) course @ [Department of Computer Science](https://di.unipi.it/en/?start=25) of [University of Pisa](https://unipi.it)
+Project of [Computational Mathematics for Learning and Data Analysis](https://esami.unipi.it/esami2/programma.php?c=50477) course @ [Department of Computer Science](https://di.unipi.it/en/?start=25) of [University of Pisa](https://unipi.it)
 
 
 ## Project 19 track
