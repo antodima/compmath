@@ -43,10 +43,14 @@ cup_y_test = cup_train(1301:end,21:22);
 %% the problem
 A = [2 5;1 7];
 b = [100 70]';
+interval = -100:2:100;
+[Problem] = quadratic(A, b, interval);
+%x0 = [-37,88]';
+x0 = randi([-100,100], 2,1);
 
-x0 = [-37,88]';
 t = 0.1; % momentum parameter
 eps = 1e-10;
 MaxIter = 1000;
 
-[x] = SGD(A, b, x0, eps, MaxIter);
+%% the solutions
+[x] = GD(Problem, x0, eps, MaxIter);
