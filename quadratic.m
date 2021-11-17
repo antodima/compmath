@@ -47,11 +47,21 @@ function [Problem] = quadratic(A, b, interval)
     Problem.grad2 = A;
     
     Problem.plot = @plot;
-    function [] = plot()
-        [XX,YY] = meshgrid(Problem.interval);
-        X = XX(:); Y = YY(:); Z = diag(Problem.cost([X Y]'));
-        ZZ = reshape(Z, size(XX));
-        contour(XX,YY,ZZ);
-        hold on;
+    function [] = plot
+        if m == 2
+            [XX,YY] = meshgrid(Problem.interval);
+            X = XX(:); Y = YY(:); Z = diag(Problem.cost([X Y]'));
+            ZZ = reshape(Z, size(XX));
+            contour(XX,YY,ZZ);
+            hold on;
+        end
+    end
+
+    Problem.plot_line = @plot_line;
+    function [] = plot_line(x1, x2)
+        if m == 2
+            PXY = [x1, x2];
+            line('XData', PXY(1 , :), 'YData', PXY(2 , :), 'LineStyle', '-', 'LineWidth', 2, 'Marker', 'o', 'Color', [0 0 0]);
+        end
     end
 end

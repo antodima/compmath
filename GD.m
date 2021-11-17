@@ -23,7 +23,7 @@ function [x] = GD(Problem, x0, eps, MaxIter)
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps
+        if ng <= eps | i > MaxIter
            break;
         end
         
@@ -33,9 +33,7 @@ function [x] = GD(Problem, x0, eps, MaxIter)
             
             x_old = x;
             x = x - t*g;
-            
-            PXY = [x_old, x];
-            line('XData', PXY(1 , :), 'YData', PXY(2 , :), 'LineStyle', '-', 'LineWidth', 2, 'Marker', 'o', 'Color', [0 0 0]);
+            Problem.plot_line(x_old, x);
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
         
