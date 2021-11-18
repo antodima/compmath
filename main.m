@@ -41,20 +41,36 @@ cup_x_test = table2array(cup_train(1301:end,1:20));
 cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% the problem
-x1 = -100; x2 = 100; interval = x1:2:x2;
-%A = [2 5;1 7];
-%b = [100 70]';
-%x0 = [-37,88]';
-A = monks1_x_train * monks1_x_train';
-b = monks1_y_train;
-x0 = randi([x1,x2], size(b,1),1);
+x1 = -150; x2 = 150; interval = x1:5:x2;
+A = [2 5;1 7];
+b = [100 70]';
+x0 = [-37,88]';
+%A = monks1_x_train * monks1_x_train';
+%b = monks1_y_train;
+%x0 = randi([x1,x2], size(b,1),1);
 
 [Problem] = quadratic(A, b, interval);
+[Problem1] = leastsquares(A, b);
 
-
-t = 0.1; % momentum parameter
-eps = 1e-10;
+t = 0.01; % momentum parameter
+eps = 1e-6;
 MaxIter = 10000;
 
 %% the solutions
-[x] = GD(Problem, x0, eps, MaxIter);
+[x] = GD(Problem1, x0, eps, t, MaxIter);
+
+
+
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function y = sigmoid(a)
+    y = 1.0 ./ (1 + exp(-a));
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function y = relu(a)
+    y = max(0, a);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function y = linear(x)
+   y = x;
+end

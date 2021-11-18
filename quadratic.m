@@ -36,15 +36,18 @@ function [Problem] = quadratic(A, b, interval)
     
     Problem.cost = @cost;
     function f = cost(x)
-        f = 0.5 * x'*A*x + b'*x;
+        f = 0.5 * x'*A*x - b'*x;
     end
 
     Problem.grad = @grad;
     function d = grad(x)
-        d = A*x + b;
+        d = A*x - b;
     end
 
-    Problem.grad2 = A;
+    Problem.grad2 = @grad2;
+    function e = grad2()
+        e = A;
+    end
     
     Problem.plot = @plot;
     function [] = plot
@@ -64,4 +67,5 @@ function [Problem] = quadratic(A, b, interval)
             line('XData', PXY(1 , :), 'YData', PXY(2 , :), 'LineStyle', '-', 'LineWidth', 2, 'Marker', 'o', 'Color', [0 0 0]);
         end
     end
+
 end
