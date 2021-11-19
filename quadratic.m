@@ -61,10 +61,10 @@ function [Problem] = quadratic(A, b, interval)
     end
 
     Problem.plot_line = @plot_line;
-    function [] = plot_line(x1, x2)
+    function [] = plot_line(x1, x2, c)
         if m == 2
             PXY = [x1, x2];
-            line('XData', PXY(1 , :), 'YData', PXY(2 , :), 'LineStyle', '-', 'LineWidth', 2, 'Marker', 'o', 'Color', [0 0 0]);
+            line('XData', PXY(1 , :), 'YData', PXY(2 , :), 'LineStyle', '-', 'LineWidth', 2, 'Marker', 'o', 'Color', c);
         end
     end
 

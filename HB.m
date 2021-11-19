@@ -1,7 +1,7 @@
-function [x] = GD(Problem, x0, eps, t, MaxIter)
+function [x] = HB(Problem, x0, eps, t, beta, MaxIter)
 
-%function [x] = GD(p, x0, eps, t, MaxIter)
-%   Apply the Steepest Gradient Descent algorithm.
+%function [x] = HB(p, x0, eps, t, MaxIter)
+%   Apply the Heavy Ball algorithm.
 %
 
     A = Problem.A;
@@ -17,7 +17,7 @@ function [x] = GD(Problem, x0, eps, t, MaxIter)
     end
     
     i = 1;
-    fprintf( '---Gradient Descent method\n');
+    fprintf( '---Heavy Ball method\n');
     while true        
         v = f(x);       % value of the function at x
         g = grad_f(x);  % gradient at x
@@ -27,16 +27,15 @@ function [x] = GD(Problem, x0, eps, t, MaxIter)
            break;
         end
         
-        if Problem.name == "quadratic"
-            den = g'*A*g;
-            t = ng^2 / den; % stepsize
-            
-            x_old = x;
+        x_old = x;
+        if i == 1
             x = x - t*g;
-            Problem.plot_line(x_old, x, 'black');
-            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         else
-            x = x - t*g;
+            x = x - t*g + beta*(x - x_old);
+        end
+        
+        if Problem.name == "quadratic"
+            Problem.plot_line(x_old, x, 'red');
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
         
