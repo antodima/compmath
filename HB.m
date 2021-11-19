@@ -1,4 +1,4 @@
-function [x, i] = HB(Problem, x0, eps, t, beta, MaxIter)
+function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter)
 
 %function [x] = HB(p, x0, eps, t, MaxIter)
 %   Apply the Heavy Ball algorithm.
@@ -11,6 +11,7 @@ function [x, i] = HB(Problem, x0, eps, t, beta, MaxIter)
     f = Problem.cost;
     grad_f = Problem.grad;
     x = x0; % starting point
+    x1 = x0;
     
     if Problem.name == "quadratic"
         Problem.plot();
@@ -29,15 +30,27 @@ function [x, i] = HB(Problem, x0, eps, t, beta, MaxIter)
             i = i + 1;
         end
         
-        x_old = x;
-        if i == 1
-            x = x - t*g;
-        else
-            x = x - t*g + beta*(x - x_old);
-        end
-        
         if Problem.name == "quadratic"
-            Problem.plot_line(x_old, x, 'red');
+            den = g'*A*g;
+            alpha = ng^2 / den; % stepsize
+            
+            if i == 1
+                x = x - alpha*g;
+                x1 = x;
+            else
+                x = x - alpha*g + beta*(x1 - x0);
+                x0 = x1; x1 = x;
+            end
+            Problem.plot_line(x0, x1, 'red');
+            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+        else
+            if i == 1
+                x = x - alpha*g;
+                x1 = x;
+            else
+                x = x - alpha*g + beta*(x1 - x0);
+                x0 = x1; x1 = x;
+            end
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
     end
