@@ -82,8 +82,8 @@ for g=1:size(grid,1)
     params = grid(g,:);
     h = params(1);
     MaxIter = params(2);
-    t = params(3);
-    l = params(4);
+    lr = params(3);
+    lambda = params(4);
 end
 %}
 
