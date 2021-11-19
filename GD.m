@@ -11,7 +11,7 @@ function [x] = GD(Problem, x0, eps, t, MaxIter)
     f = Problem.cost;
     grad_f = Problem.grad;
     x = x0; % starting point
-    disp(Problem.name);
+    
     if Problem.name == "quadratic"
         Problem.plot();
     end

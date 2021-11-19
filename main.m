@@ -41,23 +41,35 @@ cup_x_test = table2array(cup_train(1301:end,1:20));
 cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% the problem
-x1 = -150; x2 = 150; interval = x1:5:x2;
+%{
 A = [2 5;1 7];
 b = [100 70]';
-x0 = [-37,88]';
-%A = monks1_x_train * monks1_x_train';
-%b = monks1_y_train;
-%x0 = randi([x1,x2], size(b,1),1);
+
+x1 = -150; x2 = 150; interval = x1:5:x2;
+%x0 = [-37,88]';
+x0 = randi([x1,x2], size(b,1),1);
+
+t = 0.01;
+eps = 1e-6;
+MaxIter = 1000;
 
 [Problem] = quadratic(A, b, interval);
-[Problem1] = leastsquares(A, b);
+%}
 
-t = 0.01; % momentum parameter
-eps = 1e-6;
-MaxIter = 10000;
+h = 3; % hidden layer dimension
+X = monks1_x_train; y = monks1_y_train;
+W = rand(size(X,2),h);
+Q = sigmoid(X*W);
+A = Q'*Q; b = Q'*y; % non square matrix, solve: Q^T*Q=Q^T*b
+
+x1 = -20; x2 = 20;
+x0 = (x2-x1).*rand(size(b,1), 1, 'double');
+
+t = 0.000001; eps = 1e-6; MaxIter = 100; l = 1e-4;
+[Problem] = leastsquares(A, b, l);
 
 %% the solutions
-[x] = GD(Problem1, x0, eps, t, MaxIter);
+[x] = GD(Problem, x0, eps, t, MaxIter);
 
 
 
