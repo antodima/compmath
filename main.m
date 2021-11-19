@@ -73,8 +73,8 @@ t = 0.000001; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
 [y2, iters2] = HB(Problem, x0, eps, t, beta, MaxIter);
 
 disp("===================");
-fprintf('GD (black): iters=%d, residual=%f\n', iters1, norm(b-y1));
-fprintf('HB (red): iters=%d, residual=%f\n', iters2, norm(b-y2));
+fprintf('GD (black):\t iters=%d \t residual=%e\n', iters1, norm(b-A*y1));
+fprintf('HB (red):\t iters=%d \t residual=%e\n', iters2, norm(b-A*y2));
 
 %{
 % hyperparameters
