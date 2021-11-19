@@ -69,8 +69,8 @@ t = 0.000001; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
 %}
 
 %% the solutions
-[x] = GD(Problem, x0, eps, t, MaxIter);
-[x] = HB(Problem, x0, eps, t, beta, MaxIter);
+[x, i] = GD(Problem, x0, eps, t, MaxIter);
+[x, i] = HB(Problem, x0, eps, t, beta, MaxIter);
 
 %{
 % hyperparameters

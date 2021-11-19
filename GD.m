@@ -1,4 +1,4 @@
-function [x] = GD(Problem, x0, eps, t, MaxIter)
+function [x, i] = GD(Problem, x0, eps, t, MaxIter)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
@@ -16,15 +16,17 @@ function [x] = GD(Problem, x0, eps, t, MaxIter)
         Problem.plot();
     end
     
-    i = 1;
+    i = 0;
     fprintf( '---Gradient Descent method\n');
     while true        
         v = f(x);       % value of the function at x
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps | i > MaxIter
+        if ng <= eps | i == MaxIter
            break;
+        else
+            i = i + 1;
         end
         
         if Problem.name == "quadratic"
@@ -39,8 +41,6 @@ function [x] = GD(Problem, x0, eps, t, MaxIter)
             x = x - t*g;
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
-        
-        i = i + 1;
     end
     
 end

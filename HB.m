@@ -1,4 +1,4 @@
-function [x] = HB(Problem, x0, eps, t, beta, MaxIter)
+function [x, i] = HB(Problem, x0, eps, t, beta, MaxIter)
 
 %function [x] = HB(p, x0, eps, t, MaxIter)
 %   Apply the Heavy Ball algorithm.
@@ -16,15 +16,17 @@ function [x] = HB(Problem, x0, eps, t, beta, MaxIter)
         Problem.plot();
     end
     
-    i = 1;
+    i = 0;
     fprintf( '---Heavy Ball method\n');
     while true        
         v = f(x);       % value of the function at x
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps | i > MaxIter
+        if ng <= eps | i == MaxIter
            break;
+        else
+            i = i + 1;
         end
         
         x_old = x;
@@ -38,8 +40,6 @@ function [x] = HB(Problem, x0, eps, t, beta, MaxIter)
             Problem.plot_line(x_old, x, 'red');
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
-        
-        i = i + 1;
     end
     
 end
