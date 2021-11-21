@@ -1,8 +1,7 @@
 function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter)
 
-%function [x] = HB(p, x0, eps, t, MaxIter)
+%function [x] = HB(p, x0, eps, alpha, beta, MaxIter)
 %   Apply the Heavy Ball algorithm.
-%
 
     A = Problem.A;
     b = Problem.b;
@@ -10,6 +9,7 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter)
     n = Problem.n;
     f = Problem.cost;
     grad_f = Problem.grad;
+    
     x = x0; % starting point
     x1 = x0;
     

@@ -48,9 +48,7 @@ b = [100 70]';
 x1 = -150; x2 = 150; interval = x1:5:x2;
 %x0 = [-37,88]';
 x0 = randi([x1,x2], size(b,1),1);
-
-t = 0.01; eps = 1e-6; MaxIter = 1000; beta = 0.1;
-
+t = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1;
 [Problem] = quadratic(A, b, interval);
 
 
@@ -71,10 +69,12 @@ t = 0.000001; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
 %% the solutions
 [y1, iters1] = GD(Problem, x0, eps, t, MaxIter);
 [y2, iters2] = HB(Problem, x0, eps, t, beta, MaxIter);
+[y3, iters3] = ACG(Problem, x0, eps, t, beta, MaxIter);
 
 disp("===================");
 fprintf('GD (black):\t iters=%d \t residual=%e\n', iters1, norm(b-A*y1));
 fprintf('HB (red):\t iters=%d \t residual=%e\n', iters2, norm(b-A*y2));
+fprintf('ACG (green):\t iters=%d \t residual=%e\n', iters3, norm(b-A*y3));
 
 %{
 % hyperparameters

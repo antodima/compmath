@@ -2,7 +2,6 @@ function [x, i] = GD(Problem, x0, eps, t, MaxIter)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
-%
 
     A = Problem.A;
     b = Problem.b;
@@ -10,6 +9,7 @@ function [x, i] = GD(Problem, x0, eps, t, MaxIter)
     n = Problem.n;
     f = Problem.cost;
     grad_f = Problem.grad;
+    
     x = x0; % starting point
     
     if Problem.name == "quadratic"
