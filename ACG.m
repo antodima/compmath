@@ -1,4 +1,4 @@
-function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter)
+function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter, use_gamma, color, style)
 
 %function [x] = ACG(p, x0, eps, t, MaxIter)
 %   Apply the Accelerated Gradient algorithm.
@@ -43,10 +43,12 @@ function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter)
             x = x - alpha*g;
             x1 = x;
         else
-            %gamma1 = (sqrt(4*gamma1^2+gamma1^4)-gamma1^2)/2;
-            %gamma1 = 1 + sqrt(1+4*gamma0^2);
-            %beta = gamma1*((1/gamma0)-1);
-            %beta = (gamma0-1)/gamma1;
+            if use_gamma
+                gamma1 = (sqrt(4*gamma1^2+gamma1^4)-gamma1^2)/2;
+                gamma1 = 1 + sqrt(1+4*gamma0^2);
+                beta = gamma1*((1/gamma0)-1);
+                beta = (gamma0-1)/gamma1;
+            end
             
             y = x + beta*(x1 - x0);
             g = grad_f(y);
@@ -57,7 +59,7 @@ function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter)
         end
         
         if Problem.name == "quadratic"
-            Problem.plot_line(x0, x1, 'green');
+            Problem.plot_line(x0, x1, color, style);
         end
         fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
     end

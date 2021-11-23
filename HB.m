@@ -1,4 +1,4 @@
-function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter)
+function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
 
 %function [x] = HB(p, x0, eps, alpha, beta, MaxIter)
 %   Apply the Heavy Ball algorithm.
@@ -41,7 +41,7 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter)
                 x = x - alpha*g + beta*(x1 - x0);
                 x0 = x1; x1 = x;
             end
-            Problem.plot_line(x0, x1, 'red');
+            Problem.plot_line(x0, x1, color, style);
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         else
             if i == 1

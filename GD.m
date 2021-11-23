@@ -1,4 +1,4 @@
-function [x, i] = GD(Problem, x0, eps, t, MaxIter)
+function [x, i] = GD(Problem, x0, eps, t, MaxIter, color, style)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
@@ -35,7 +35,7 @@ function [x, i] = GD(Problem, x0, eps, t, MaxIter)
             
             x_old = x;
             x = x - t*g;
-            Problem.plot_line(x_old, x, 'black');
+            Problem.plot_line(x_old, x, color, style);
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         else
             x = x - t*g;
