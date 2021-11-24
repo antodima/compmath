@@ -24,7 +24,7 @@ function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, s
     while true
         
         v = f(x); % value of the function at x
-        if use_acc & t > 0
+        if use_acc && t > 0
             y = x + beta*(x1 - x0);
             g = grad_f(y);
             ng = norm(g);
@@ -33,7 +33,7 @@ function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, s
             ng = norm(g);   % norm of the gradient
         end
         
-        if ng <= eps | t == MaxIter
+        if ng <= eps || t == MaxIter
            break;
         else
             t = t + 1;

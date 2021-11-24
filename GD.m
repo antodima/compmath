@@ -23,7 +23,7 @@ function [x, i] = GD(Problem, x0, eps, t, MaxIter, color, style)
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps | i == MaxIter
+        if ng <= eps || i == MaxIter
            break;
         else
             i = i + 1;

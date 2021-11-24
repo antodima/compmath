@@ -26,7 +26,7 @@ function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter, use_gamma, color, 
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps | i == MaxIter
+        if ng <= eps || i == MaxIter
            break;
         else
             i = i + 1;

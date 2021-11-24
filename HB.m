@@ -24,7 +24,7 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps | i == MaxIter
+        if ng <= eps || i == MaxIter
            break;
         else
             i = i + 1;
