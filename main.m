@@ -48,7 +48,7 @@ b = [100 70]';
 x1 = -150; x2 = 150; interval = x1:5:x2;
 %x0 = [-37,88]';
 x0 = randi([x1,x2], size(b,1),1);
-lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.9;
+lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.85;
 %[Problem] = quadratic(A, b, interval);
 [Problem] = leastsquares(A, b, 1e-5);
 
