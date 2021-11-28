@@ -1,12 +1,16 @@
-function [as, i] = BacktrackingLS(f, grad_f, x, g, phi0, phip0, as, m1, tau, mina, MaxFeval)
+function [as, i] = BacktrackingLS(f, grad_f, x, as, m1, tau, MaxIters)
     i = 1;
-    while feval <= MaxFeval && as > mina
-       x = x - alpha*g;
-       phi = f(x);
+    phi0 = f(x);
+    g = grad_f(x);
+    ng = norm(g);
+    phip0 = -ng * ng;
+    while i <= MaxIters && as > 1e-16
+       x = x - as*g;
+       phia = f(x);
        lastg = grad_f(x);
-       phip = - g' * lastg;
-       if phia <= phi0 + m1 * as * phip0  % Armijo satisfied
-          break;                          % we are done
+       phip = -g' * lastg;
+       if phia <= phi0 + m1*as*phip0  % Armijo satisfied
+          break;
        end
        as = as * tau;
        i = i + 1;

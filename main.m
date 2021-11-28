@@ -48,8 +48,9 @@ b = [100 70]';
 x1 = -150; x2 = 150; interval = x1:5:x2;
 %x0 = [-37,88]';
 x0 = randi([x1,x2], size(b,1),1);
-lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1;
-[Problem] = quadratic(A, b, interval);
+lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.9;
+%[Problem] = quadratic(A, b, interval);
+[Problem] = leastsquares(A, b, 1e-5);
 
 
 %{
@@ -67,23 +68,23 @@ lr = 0.000001; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
 %}
 
 %% the solutions
-[y1, iters1] = GD(Problem, x0, eps, lr, MaxIter, 'black', '-');
-[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-');
-[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
-[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
-[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
-[L, D, y6] = LDL(Problem);
-[L1,D1] = ldl(Problem.A);
-y7 = L1' \ ((L1\b) ./ diag(D1));
+[y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-');
+%[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-');
+%[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
+%[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
+%[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
+%[L, D, y6] = LDL(Problem);
+%[L1,D1] = ldl(Problem.A);
+%y7 = L1' \ ((L1\b) ./ diag(D1));
 
 disp("======================================================================");
 fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, norm(b-A*y1));
-fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, norm(b-A*y2));
-fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, norm(b-A*y3));
-fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, norm(b-A*y4));
-fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, norm(b-A*y5));
-fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(b-A*y6), norm(A), norm(L), norm(D));
-fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(b-A*y7), norm(A), norm(L1), norm(D1));
+%fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, norm(b-A*y2));
+%fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, norm(b-A*y3));
+%fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, norm(b-A*y4));
+%fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, norm(b-A*y5));
+%fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(b-A*y6), norm(A), norm(L), norm(D));
+%fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(b-A*y7), norm(A), norm(L1), norm(D1));
 
 %{
 % hyperparameters
