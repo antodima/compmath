@@ -1,7 +1,6 @@
-function [L, D, x] = LDL(Problem)
+function [L, D, x] = LDL(A, b)
 % LDL factorization
 
-    A = Problem.A; b = Problem.b;
     m = size(A, 1);
     L = eye(m); D = zeros(m);
     for k = 1:m-1
