@@ -77,13 +77,13 @@ AA = A'*A; bb = A'*b;
 [L1,D1] = ldl(AA); y7 = L1' \ ((L1\bb) ./ diag(D1));
 
 disp("======================================================================");
-fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, norm(b-A*y1));
-fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, norm(b-A*y2));
-fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, norm(b-A*y3));
-fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, norm(b-A*y4));
-fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, norm(b-A*y5));
-fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(bb-AA*y6), norm(AA), norm(L), norm(D));
-fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', norm(bb-AA*y7), norm(AA), norm(L1), norm(D1));
+fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
+fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/norm(b)));
+fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
+fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
+fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
+fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y6)/norm(bb)), norm(AA), norm(L), norm(D));
+fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
 
 %{
 % hyperparameters
