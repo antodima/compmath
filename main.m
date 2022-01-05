@@ -73,8 +73,11 @@ AA = A'*A; bb = A'*b;
 [y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
 [y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
 [y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
-[L, D, y6] = LDL(AA, bb);
-[L1,D1] = ldl(AA); y7 = L1' \ ((L1\bb) ./ diag(D1));
+
+% https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
+I=eye(size(AA,1),size(AA,2));
+[L, D, y6] = LDL(AA+l*I, bb);
+[L1,D1] = ldl(AA+l*I); y7 = L1' \ ((L1\bb) ./ diag(D1));
 
 disp("======================================================================");
 fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
