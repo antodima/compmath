@@ -41,38 +41,39 @@ cup_x_test = table2array(cup_train(1301:end,1:20));
 cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% the problem
-%{
+%{%}
 A = [2 5;1 7];
 b = [100 70]';
 
 x1 = -150; x2 = 150; interval = x1:5:x2;
 %x0 = [-37,88]';
 x0 = randi([x1,x2], size(b,1),1);
-lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.85;
-%[Problem] = quadratic(A, b, interval);
+lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.85; l = 1e-4;
+[Problem] = quadratic(A, b, interval);
 %[Problem] = leastsquares(A, b, 1e-5);
-%}
+AA = A'*A; bb = A'*b;
 
-%{%}
+%{
 X = monks1_x_train; y = monks1_y_train;
 
 %W = rand(size(X,2),h);
 %Q = sigmoid(X*W);
 %A = Q'*Q; b = Q'*y; % non square matrix, solve: Q^T*Q=Q^T*b
 
-lr = 0.01; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
+lr = 0.01; eps = 1e-6; MaxIter = 1000; l = 1e-4; beta = 0.01;
 h = 3; m1 = 0.0001; tau = 0.9;
 [Problem] = extreme(X, y, "sigmoid", h, l);
 A = Problem.A; b = Problem.b; x0 = Problem.W2;
 AA = A'*A; bb = A'*b;
-
+%}
 
 %% the solutions
 [y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-');
 [y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-');
-[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
-[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
-[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
+%[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
+%[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
+%[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
+[y8, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 I=eye(size(AA,1),size(AA,2));
@@ -82,11 +83,14 @@ I=eye(size(AA,1),size(AA,2));
 disp("======================================================================");
 fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
 fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/norm(b)));
-fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
-fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
-fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
+%fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
+%fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
+%fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
+fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y8)/norm(b)));
+
 fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y6)/norm(bb)), norm(AA), norm(L), norm(D));
 fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
+
 
 %{
 % hyperparameters

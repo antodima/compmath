@@ -36,6 +36,12 @@ function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda)
         error = (2 / Problem.n) * (y - Problem.b);
         d = Problem.A'*error - 2*Problem.l*x;
     end
+
+    Problem.grad2 = @grad2;
+    function h = grad2()
+        % https://math.stackexchange.com/a/1962938
+        h = 2*A'*A;
+    end
     
     Problem.sigma = @sigma;
     function o = sigma(X, type)
