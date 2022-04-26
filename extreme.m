@@ -1,4 +1,4 @@
-function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda)
+function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda, use_sign)
 % MSE with regularization using extreme learning
 
     d = length(b);
@@ -14,6 +14,7 @@ function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda)
     Problem.Q = A;
     Problem.b = b;
     Problem.l = lambda;
+    Problem.use_sign = use_sign;
     Problem.W1 = rand(n,h);
     Problem.A = sigma(Problem.Q*Problem.W1, sigmaType);
     Problem.W2 = rand(size(Problem.A,2),1);
@@ -21,6 +22,9 @@ function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda)
     Problem.output = @output
     function y = output(x)
         y = Problem.A*x;
+        if Problem.use_sign
+            y = sign(y);
+        end
     end
     
     Problem.cost = @cost;
@@ -35,6 +39,7 @@ function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda)
         y = output(x);
         error = (2 / Problem.n) * (y - Problem.b);
         d = Problem.A'*error - 2*Problem.l*x;
+        % TODO: gradient with sign
     end
 
     Problem.grad2 = @grad2;

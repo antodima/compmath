@@ -41,7 +41,7 @@ cup_x_test = table2array(cup_train(1301:end,1:20));
 cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% the problem
-%{%}
+%{
 A = [2 5;1 7];
 b = [100 70]';
 
@@ -52,9 +52,11 @@ lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.85; l = 1e
 [Problem] = quadratic(A, b, interval);
 %[Problem] = leastsquares(A, b, 1e-5);
 AA = A'*A; bb = A'*b;
+%}
 
-%{
-X = monks1_x_train; y = monks1_y_train;
+%{%}
+%X = monks1_x_train; y = monks1_y_train;
+X = cup_x_train; y = cup_y_train;
 
 %W = rand(size(X,2),h);
 %Q = sigmoid(X*W);
@@ -62,10 +64,10 @@ X = monks1_x_train; y = monks1_y_train;
 
 lr = 0.01; eps = 1e-6; MaxIter = 1000; l = 1e-4; beta = 0.01;
 h = 3; m1 = 0.0001; tau = 0.9;
-[Problem] = extreme(X, y, "sigmoid", h, l);
+[Problem] = extreme(X, y, "sigmoid", h, l, false);
 A = Problem.A; b = Problem.b; x0 = Problem.W2;
 AA = A'*A; bb = A'*b;
-%}
+
 
 %% the solutions
 [y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-');
@@ -73,12 +75,13 @@ AA = A'*A; bb = A'*b;
 %[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
 %[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
 %[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
-[y8, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
+[y6, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 I=eye(size(AA,1),size(AA,2));
-[L, D, y6] = LDL(AA+l*I, bb);
 [L1,D1] = ldl(AA+l*I); y7 = L1' \ ((L1\bb) ./ diag(D1));
+[L2, D2, P2, y8] = LDL(AA+l*I, bb, true);
+[L3, D3, P3, y9] = LDL(AA+l*I, bb, false);
 
 disp("======================================================================");
 fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
@@ -86,10 +89,11 @@ fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/nor
 %fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
 %fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
 %fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
-fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y8)/norm(b)));
+fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y6)/norm(b)));
 
-fprintf('LDL: \t\t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y6)/norm(bb)), norm(AA), norm(L), norm(D));
-fprintf('ldl matlab: \t\t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
+fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y9)/norm(bb)), norm(AA), norm(L3), norm(D3));
+fprintf('LDL \t (pivoting): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y8)/norm(bb)), norm(AA), norm(L2), norm(D2));
+fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
 
 
 %{
