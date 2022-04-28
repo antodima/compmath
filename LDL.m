@@ -5,7 +5,6 @@ function [L, D, P, x] = LDL(A, b, pivoting)
     P = eye(m);
     A_diag = diag(A);
     for k = 1:m-1
-        % pivoting
         if pivoting
             %[unused, p] = max(abs(A(k:end, k)));
             %p = k-1 + p;
@@ -20,10 +19,11 @@ function [L, D, P, x] = LDL(A, b, pivoting)
                 end
             end
 
-            if j ~= k
+            if ind ~= k
                 P(:,[k,ind]) = P(:,[ind,k]);
-                A([k,ind],:) = A([ind,k],:);
-                A(:,[k,ind]) = A(:,[ind,k]);
+                %A([k,ind],:) = A([ind,k],:);
+                %A(:,[k,ind]) = A(:,[ind,k]);
+                A = P*A*P;
             end
         end
         

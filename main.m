@@ -62,7 +62,7 @@ X = cup_x_train; y = cup_y_train;
 %Q = sigmoid(X*W);
 %A = Q'*Q; b = Q'*y; % non square matrix, solve: Q^T*Q=Q^T*b
 
-lr = 0.01; eps = 1e-6; MaxIter = 1000; l = 1e-4; beta = 0.01;
+lr = 0.01; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
 h = 3; m1 = 0.0001; tau = 0.9;
 [Problem] = extreme(X, y, "sigmoid", h, l, false);
 A = Problem.A; b = Problem.b; x0 = Problem.W2;
@@ -74,7 +74,7 @@ AA = A'*A; bb = A'*b;
 [y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-');
 %[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
 %[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
-%[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, 500, true, 'yellow', '-');
+[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-');
 [y6, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
@@ -88,7 +88,7 @@ fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/n
 fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/norm(b)));
 %fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
 %fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
-%fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
+fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
 fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y6)/norm(b)));
 
 fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y9)/norm(bb)), norm(AA), norm(L3), norm(D3));
