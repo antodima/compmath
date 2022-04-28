@@ -32,5 +32,6 @@ function [L, D, P, x] = LDL(A, b, pivoting)
         A(k+1:end, k+1:end) = A(k+1:end, k+1:end) - L(k+1:end, k) * A(k, k+1:end);
     end
     D(m, m) = A(m, m);
-    x = L'*P' \ ((P*L\b) ./ diag(D)); % solve the linear system
+    L = P * L;
+    x = L' \ ((L\b) ./ diag(D)); % solve the linear system
 end
