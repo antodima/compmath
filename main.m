@@ -80,8 +80,9 @@ AA = A'*A; bb = A'*b;
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 I=eye(size(AA,1),size(AA,2));
 [L1,D1] = ldl(AA+l*I); y7 = L1' \ ((L1\bb) ./ diag(D1));
-[L2, D2, P2, y8] = LDL(AA+l*I, bb, true);
-[L3, D3, P3, y9] = LDL(AA+l*I, bb, false);
+[L2, D2, P2, y8] = LDL(AA+l*I, bb, true, 1);
+[L3, D3, P3, y9] = LDL(AA+l*I, bb, true, 2);
+[L4, D4, P4, y10] = LDL(AA+l*I, bb, false);
 
 disp("======================================================================");
 fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
@@ -91,8 +92,9 @@ fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/nor
 fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
 fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y6)/norm(b)));
 
-fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y9)/norm(bb)), norm(AA), norm(L3), norm(D3));
-fprintf('LDL \t (pivoting): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y8)/norm(bb)), norm(AA), norm(L2), norm(D2));
+fprintf('LDL \t (partial pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y9)/norm(bb)), norm(AA), norm(L3), norm(D3));
+fprintf('LDL \t (complete pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y8)/norm(bb)), norm(AA), norm(L2), norm(D2));
+fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y10)/norm(bb)), norm(AA), norm(L4), norm(D4));
 fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
 
 
