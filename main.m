@@ -46,28 +46,32 @@ A = [2 5;1 7];
 b = [100 70]';
 
 x1 = -150; x2 = 150; interval = x1:5:x2;
-%x0 = [-37,88]';
-x0 = randi([x1,x2], size(b,1),1);
-lr = 0.1; eps = 1e-6; MaxIter = 100; beta = 0.1; m1 = 0.0001; tau = 0.85; l = 1e-4;
+x0 = [-37,88]';
+%x0 = randi([x1,x2], size(b,1),1);
+lr = 0.1; eps = 1e-6; MaxIter = 1000; beta = 0.1; m1 = 0.0001; tau = 0.85; l = 1e-4;
 [Problem] = quadratic(A, b, interval);
 %[Problem] = leastsquares(A, b, 1e-5);
-AA = A'*A; bb = A'*b;
+I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %}
 
 %{%}
 %X = monks1_x_train; y = monks1_y_train;
 X = cup_x_train; y = cup_y_train;
 
-%W = rand(size(X,2),h);
-%Q = sigmoid(X*W);
-%A = Q'*Q; b = Q'*y; % non square matrix, solve: Q^T*Q=Q^T*b
-
-lr = 0.01; eps = 1e-6; MaxIter = 100; l = 1e-4; beta = 0.01;
+lr = 0.01; eps = 1e-8; MaxIter = 100; l = 1e-4; beta = 0.01;
 h = 3; m1 = 0.0001; tau = 0.9;
 [Problem] = extreme(X, y, "sigmoid", h, l, false);
 A = Problem.A; b = Problem.b; x0 = Problem.W2;
-AA = A'*A; bb = A'*b;
+I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 
+
+%{
+lr = 0.01; eps = 1e-8; MaxIter = 1000; l = 1e-4; beta = 0.01;
+h = 3; m1 = 0.0001; tau = 0.9;
+A = randn(6,4); b = randn(6,1); x0 = randn(4,1);
+[Problem] = leastsquares(A, b, 1e-5);
+I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
+%}
 
 %% the solutions
 [y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-');
@@ -78,24 +82,22 @@ AA = A'*A; bb = A'*b;
 [y6, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
-I=eye(size(AA,1),size(AA,2));
-[L1,D1] = ldl(AA+l*I); y7 = L1' \ ((L1\bb) ./ diag(D1));
-[L2, D2, P2, y8] = LDL(AA+l*I, bb, true, 1);
-[L3, D3, P3, y9] = LDL(AA+l*I, bb, true, 2);
-[L4, D4, P4, y10] = LDL(AA+l*I, bb, false);
+[L7,D7] = ldl(AA); y7 = L7' \ ((L7\bb) ./ diag(D7));
+[L8, D8, P8, y8] = LDL(AA, bb, true);
+[L9, D9, P9, y9] = LDL(AA, bb, false);
 
+format short e;
 disp("======================================================================");
-fprintf('GD \t (black): \t\t iters=%d \t residual=%e\n', iters1, (norm(b-A*y1)/norm(b)));
-fprintf('HB \t (red): \t\t iters=%d \t residual=%e\n', iters2, (norm(b-A*y2)/norm(b)));
-%fprintf('ACG \t (green): \t\t iters=%d \t residual=%e\n', iters3, (norm(b-A*y3)/norm(b)));
-%fprintf('ADAM \t (blue): \t\t iters=%d \t residual=%e\n', iters4, (norm(b-A*y4)/norm(b)));
-fprintf('NADAM \t (yellow): \t\t iters=%d \t residual=%e\n', iters5, (norm(b-A*y5)/norm(b)));
-fprintf('FISTA \t (blue): \t\t iters=%d \t residual=%e\n', iters8, (norm(b-A*y6)/norm(b)));
+r1 = sqrt(immse(b, A*y1)); fprintf('GD \t (black): \t\t iters=%d \t rmse=%e\n', iters1, r1);
+r2 = sqrt(immse(b, A*y2)); fprintf('HB \t (red): \t\t iters=%d \t rmse=%e\n', iters2, r2);
+%r3 = sqrt(immse(b, A*y3)); fprintf('ACG \t (green): \t\t iters=%d \t rmse=%e\n', iters3, r3);
+%r4 = sqrt(immse(b, A*y4)); fprintf('ADAM \t (blue): \t\t iters=%d \t rmse=%e\n', iters4, r4);
+r5 = sqrt(immse(b, A*y5)); fprintf('NADAM \t (yellow): \t\t iters=%d \t rmse=%e\n', iters5, r5);
+r6 = sqrt(immse(b, A*y6)); fprintf('FISTA \t (blue): \t\t iters=%d \t rmse=%e\n', iters8, r6);
 
-fprintf('LDL \t (partial pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y9)/norm(bb)), norm(AA), norm(L3), norm(D3));
-fprintf('LDL \t (complete pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y8)/norm(bb)), norm(AA), norm(L2), norm(D2));
-fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y10)/norm(bb)), norm(AA), norm(L4), norm(D4));
-fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', (norm(bb-AA*y7)/norm(bb)), norm(AA), norm(L1), norm(D1));
+r7 = norm(bb-AA*y7)/norm(bb); fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r7, norm(AA), norm(L7), norm(D7));
+r8 = norm(bb-AA*y8)/norm(bb); fprintf('LDL \t (with pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r8, norm(AA), norm(L8), norm(D8));
+r9 = norm(bb-AA*y9)/norm(bb); fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r9, norm(AA), norm(L9), norm(D9));
 
 
 %{

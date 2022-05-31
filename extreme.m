@@ -16,12 +16,13 @@ function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda, use_sign)
     Problem.l = lambda;
     Problem.use_sign = use_sign;
     Problem.W1 = rand(n,h);
+    Problem.bias = rand(1,1);
     Problem.A = sigma(Problem.Q*Problem.W1, sigmaType);
     Problem.W2 = rand(size(Problem.A,2),1);
     
     Problem.output = @output
     function y = output(x)
-        y = Problem.A*x;
+        y = Problem.A*x+Problem.bias;
         if Problem.use_sign
             y = sign(y);
         end
