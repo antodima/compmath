@@ -31,9 +31,13 @@ AA = A'*A+l*I; bb = A'*b;
 A_test = cup_x_test; b_test = cup_y_test;
 AA_test = A_test'*A_test+l*I; bb_test = A_test'*b_test;
 
-[L, D, P, y] = LDL(AA, bb, false);
-res_train = norm(bb-AA*y)/norm(bb);
-res_test= norm(bb_test-AA_test*y)/norm(bb_test);
-fprintf('FISTA \t residual (train)=%1.4e \t residual (test)=%1.4e \n', value, errors_test(end));
-fprintf('LDL \t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train, res_test);
+[L1, D1, P1, y1] = LDL(AA, bb, false);
+[L2, D2, P2, y2] = LDL(AA, bb, true);
+
+res_train_1 = norm(bb-AA*y1)/norm(bb); res_test_1 = norm(bb_test-AA_test*y1)/norm(bb_test);
+res_train_2 = norm(bb-AA*y2)/norm(bb); res_test_2 = norm(bb_test-AA_test*y2)/norm(bb_test);
+
+fprintf('FISTA \t\t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', value, errors_test(end));
+fprintf('LDL (no pivot) \t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_1, res_test_1);
+fprintf('LDL (with pivot) \t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_2, res_test_2);
 

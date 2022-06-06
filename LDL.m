@@ -84,6 +84,7 @@ function [L, D, P, x] = LDL(A, b, pivoting)
     end
     D(m, n) = A(m, n);
     
+    %{
     if pivoting
         disp('-------------')
         fprintf("P\n");
@@ -93,6 +94,7 @@ function [L, D, P, x] = LDL(A, b, pivoting)
         fprintf("PLDL'P'\n");
         disp(P*L*D*L'*P');
     end
+    %}
     
     L1 = P*L;
     x = L1' \ ((L1\b) ./ diag(D)); % solve the linear system
