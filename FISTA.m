@@ -1,13 +1,17 @@
-function [x, i] = FISTA(Problem, x0, eps, MaxIter, color, style)
+function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
 
 %function [x] = FISTA(p, x0, eps, t, MaxIter)
 %   Apply the FISTA algorithm.
+    errors = []; errors_test = []; % history of losses
 
     A = Problem.A;
     b = Problem.b;
+    A_test = Problem.A_test;
+    b_test = Problem.b_test;
     m = Problem.m;
     n = Problem.n;
     f = Problem.cost;
+    t = Problem.test;
     grad_f = Problem.grad;
     grad2_f = Problem.grad2;
     
@@ -25,7 +29,9 @@ function [x, i] = FISTA(Problem, x0, eps, MaxIter, color, style)
     end
     
     i = 0;
-    fprintf( '---FISTA method\n');
+    if verbose == 1
+        fprintf( '---FISTA method\n');
+    end
     while true        
         v = f(x0);       % value of the function at x
         g = grad_f(x0);  % gradient at x
@@ -49,10 +55,16 @@ function [x, i] = FISTA(Problem, x0, eps, MaxIter, color, style)
         y0 = y1;
         beta0 = beta1;
         
+        % add to history
+        errors(end+1) = norm(b-A*x)/norm(b);
+        errors_test(end+1) = norm(b_test-A_test*x)/norm(b_test);
+        
         if Problem.name == "quadratic"
             Problem.plot_line(x0, x1, color, style);
         end
-        fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+        if verbose == 1
+            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+        end
     end
     
 end

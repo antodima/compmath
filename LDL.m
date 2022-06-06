@@ -9,12 +9,14 @@ function [L, D, P, x] = LDL(A, b, pivoting)
     mu1 = max(abs(diag(A)));
     
     if pivoting
+        % Bunch–Parlett pivoting
         % https://github.com/hsulab/MatrixFactorization/blob/70da3743eada50506d0a1c3b63274cdb09b1d7f1/LDL.m
         %{%}
         A_diag = diag(A);
         for k=1:n-1
             % find pivot index
             [pivot, p] = max(abs(A_diag(k:n)));
+            %p = p + k-1;
             % permutate A
             if p ~= k
                 P(:,[k,p]) = P(:,[p,k]);

@@ -57,10 +57,11 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %{%}
 %X = monks1_x_train; y = monks1_y_train;
 X = cup_x_train; y = cup_y_train;
+X_test = cup_x_test; y_test = cup_y_test;
 
-lr = 0.01; eps = 1e-8; MaxIter = 100; l = 1e-4; beta = 0.01;
+lr = 0.01; eps = 1e-8; MaxIter = 1000; l = 1e-4; beta = 0.01;
 h = 3; m1 = 0.0001; tau = 0.9;
-[Problem] = extreme(X, y, "sigmoid", h, l, false);
+[Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);
 A = Problem.A; b = Problem.b; x0 = Problem.W2;
 I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 
@@ -79,7 +80,7 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
 %[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
 [y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-');
-[y6, iters8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-');
+[y6, iters8, etr8, ets8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 1);
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 [L7,D7] = ldl(AA); y7 = L7' \ ((L7\bb) ./ diag(D7));
