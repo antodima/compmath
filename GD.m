@@ -1,4 +1,4 @@
-function [x, i] = GD(Problem, x0, eps, t, m1, tau, MaxIter, color, style)
+function [x, i] = GD(Problem, x0, eps, t, m1, tau, MaxIter, color, style, verbose)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
@@ -13,11 +13,13 @@ function [x, i] = GD(Problem, x0, eps, t, m1, tau, MaxIter, color, style)
     x = x0; % starting point
     
     if Problem.name == "quadratic"
-        Problem.plot();
+        Problem.plot_surface();
     end
     
     i = 0;
-    fprintf( '---Gradient Descent method\n');
+    if verbose == 1
+        fprintf( '---Gradient Descent method\n');
+    end
     while true        
         v = f(x);       % value of the function at x
         g = grad_f(x);  % gradient at x
@@ -36,12 +38,16 @@ function [x, i] = GD(Problem, x0, eps, t, m1, tau, MaxIter, color, style)
             x_old = x;
             x = x - t*g;
             Problem.plot_line(x_old, x, color, style);
-            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            if verbose == 1
+                fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            end
         else
             [as, lsiters] = BacktrackingLS(f, grad_f, x, t, m1, tau, 1000);
             
             x = x - as*g;
-            fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lsiters=%d \t alpha=%e \n' , i, v, ng, lsiters, as);
+            if verbose == 1
+                fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lsiters=%d \t alpha=%e \n' , i, v, ng, lsiters, as);
+            end
         end
     end
     

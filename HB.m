@@ -1,4 +1,4 @@
-function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
+function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style, verbose)
 
 %function [x] = HB(p, x0, eps, alpha, beta, MaxIter)
 %   Apply the Heavy Ball algorithm.
@@ -14,11 +14,13 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
     x1 = x0;
     
     if Problem.name == "quadratic"
-        Problem.plot();
+        Problem.plot_surface();
     end
     
     i = 0;
-    fprintf( '---Heavy Ball method\n');
+    if verbose == 1
+        fprintf( '---Heavy Ball method\n');
+    end
     while true        
         v = f(x);       % value of the function at x
         g = grad_f(x);  % gradient at x
@@ -42,7 +44,9 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
                 x0 = x1; x1 = x;
             end
             Problem.plot_line(x0, x1, color, style);
-            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            if verbose == 1
+                fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            end
         else
             if i == 1
                 x = x - alpha*g;
@@ -51,7 +55,9 @@ function [x, i] = HB(Problem, x0, eps, alpha, beta, MaxIter, color, style)
                 x = x - alpha*g + beta*(x1 - x0);
                 x0 = x1; x1 = x;
             end
-            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            if verbose == 1
+                fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+            end
         end
     end
     

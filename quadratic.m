@@ -49,8 +49,8 @@ function [Problem] = quadratic(A, b, interval)
         e = A;
     end
     
-    Problem.plot = @plot;
-    function [] = plot
+    Problem.plot_surface = @plot_surface;
+    function [] = plot_surface
         if m == 2
             [XX,YY] = meshgrid(Problem.interval);
             X = XX(:); Y = YY(:); Z = diag(Problem.cost([X Y]'));
@@ -58,6 +58,16 @@ function [Problem] = quadratic(A, b, interval)
             contour(XX,YY,ZZ);
             hold on;
         end
+    end
+
+    Problem.plot_legend = @plot_legend;
+    function [] = plot_legend(varargin)
+        hold on;
+        p1 = plot(nan, varargin{5});
+        p2 = plot(nan, varargin{6});
+        p3 = plot(nan, varargin{7});
+        p4 = plot(nan, varargin{8});
+        legend([p1 p2 p3 p4], {varargin{1},varargin{2},varargin{3},varargin{4}}, 'location', 'best')
     end
 
     Problem.plot_line = @plot_line;

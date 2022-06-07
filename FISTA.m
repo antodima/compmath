@@ -6,12 +6,16 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
 
     A = Problem.A;
     b = Problem.b;
-    A_test = Problem.A_test;
-    b_test = Problem.b_test;
+    if isfield(Problem,'A_test')
+        A_test = Problem.A_test;
+        b_test = Problem.b_test;
+    end
     m = Problem.m;
     n = Problem.n;
     f = Problem.cost;
-    t = Problem.test;
+    if isfield(Problem,'test')
+        t = Problem.test;
+    end
     grad_f = Problem.grad;
     grad2_f = Problem.grad2;
     
@@ -25,7 +29,7 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
     L = max(abs(eig(h)));
     
     if Problem.name == "quadratic"
-        Problem.plot();
+        Problem.plot_surface();
     end
     
     i = 0;
@@ -55,9 +59,11 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
         y0 = y1;
         beta0 = beta1;
         
-        % add to history
-        errors(end+1) = norm(b-A*x)/norm(b);
-        errors_test(end+1) = norm(b_test-A_test*x)/norm(b_test);
+        if isfield(Problem,'A_test')
+            % add to history
+            errors(end+1) = norm(b-A*x)/norm(b);
+            errors_test(end+1) = norm(b_test-A_test*x)/norm(b_test);
+        end
         
         if Problem.name == "quadratic"
             Problem.plot_line(x0, x1, color, style);

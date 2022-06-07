@@ -1,4 +1,4 @@
-function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, style)
+function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, style, verbose)
 
 %function [x] = ADAM(p, x0, eps, t, MaxIter)
 %   Apply the Adam algorithm.
@@ -14,13 +14,15 @@ function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, s
     x1 = x0;
     
     if Problem.name == "quadratic"
-        Problem.plot();
+        Problem.plot_surface();
     end
     
     t = 0;
     beta1 = 0.9; beta2 = 0.999;
     m0 = 0; v0 = 0;
-    fprintf( '---Adam method\n');
+    if verbose == 1
+        fprintf( '---Adam method\n');
+    end
     while true
         
         v = f(x); % value of the function at x
@@ -51,7 +53,9 @@ function [x, t] = ADAM(Problem, x0, eps, alpha, beta, MaxIter, use_acc, color, s
         if Problem.name == "quadratic"
             Problem.plot_line(x0, x1, color, style);
         end
-        fprintf('%4d\t v=%1.8e \t ng=%1.4e\n', t, v, ng);
+        if verbose == 1
+            fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
+        end
     end
     
 end

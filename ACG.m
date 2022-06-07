@@ -16,7 +16,7 @@ function [x, i] = ACG(Problem, x0, eps, alpha, beta, MaxIter, use_gamma, color, 
     gamma1 = 1;
     
     if Problem.name == "quadratic"
-        Problem.plot();
+        Problem.plot_surface();
     end
     
     i = 0;
