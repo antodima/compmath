@@ -37,9 +37,11 @@ AA_test = A_test'*A_test+l*I; bb_test = A_test'*b_test;
 
 [L1, D1, P1, y1] = LDL(AA, bb, false);
 [L2, D2, P2, y2] = LDL(AA, bb, true);
+[L3,D3] = ldl(AA); y3 = L3' \ ((L3\bb) ./ diag(D3));
 
 res_train_1 = norm(bb-AA*y1)/norm(bb); res_test_1 = norm(bb_test-AA_test*y1)/norm(bb_test);
 res_train_2 = norm(bb-AA*y2)/norm(bb); res_test_2 = norm(bb_test-AA_test*y2)/norm(bb_test);
+res_train_3 = norm(bb-AA*y3)/norm(bb); res_test_3 = norm(bb_test-AA_test*y3)/norm(bb_test);
 
 hold off;
 disp("======================================================================");
@@ -47,6 +49,7 @@ disp("CUP results:");
 fprintf('FISTA \t\t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', value, errors_test(end));
 fprintf('LDL (no pivot) \t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_1, res_test_1);
 fprintf('LDL (with pivot) \t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_2, res_test_2);
+fprintf('LDL (matlab) \t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_3, res_test_3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figure();
