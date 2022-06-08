@@ -75,12 +75,12 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %}
 
 %% the solutions
-[y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-');
-[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-');
-%[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
-%[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
-[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-');
-[y6, iters8, etr8, ets8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 1);
+[y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-', 0);
+[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-', 0);
+%[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-', 0);
+%[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-', 0);
+[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-', 0);
+[y6, iters8, loss8, loss_test8, errors8, errors_test8, rates8, norms8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 [L7,D7] = ldl(AA); y7 = L7' \ ((L7\bb) ./ diag(D7));
@@ -101,8 +101,7 @@ r8 = norm(bb-AA*y8)/norm(bb); fprintf('LDL \t (with pivoting): \t ----- \t\t res
 r9 = norm(bb-AA*y9)/norm(bb); fprintf('LDL \t (no pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r9, norm(AA), norm(L9), norm(D9));
 
 if Problem.name == "quadratic"
-    [h,icons,plots,legend_text] = Problem.plot_legend('GD','HB','NADAM','FISTA');
-    
+    Problem.plot_legend('GD','HB','NADAM','FISTA','k-','r-','b-','g-');
 end
 
 

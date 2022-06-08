@@ -11,20 +11,39 @@ cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% results
 
-load('results/residual.mat'); load('results/grid.mat'); 
+load('results/residuals.mat'); load('results/grid.mat'); 
 [value,pos] = min(residuals); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
-load(sprintf('results/x%d.mat',pos));
-load(sprintf('results/errors_train%d.mat',pos));
-load(sprintf('results/errors_test%d.mat',pos));
+
+load(sprintf('results/x%d.mat',pos),'x');
+load(sprintf('results/loss%d.mat',pos),'loss');
+load(sprintf('results/loss_test%d.mat',pos),'loss_test');
+load(sprintf('results/errors%d.mat',pos),'errors');
+load(sprintf('results/errors_test%d.mat',pos),'errors_test');
+load(sprintf('results/rates%d.mat',pos),'rates');
+load(sprintf('results/norms%d.mat',pos),'norms');
 
 figure();
-plot(errors_train,'-','LineWidth',1);
+plot(loss,'-','LineWidth',1);
+hold on;
+plot(loss_test,'-','LineWidth',1);
+xlabel('Epochs')
+ylabel('MSE');
+legend('training set','test set');
+hold off;
+
+figure();
+plot(errors,'-','LineWidth',1);
 hold on;
 plot(errors_test,'-','LineWidth',1);
 xlabel('Epochs')
 ylabel('Residual');
-%title('Best model learning curves');
 legend('training set','test set');
+hold off;
+
+figure();
+plot(rates,'-','LineWidth',1);
+xlabel('Epochs')
+ylabel('Convergence rate');
 hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,7 +89,7 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-');
 %[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-');
 [y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'blue', '-', 0);
-[y6, iters8, etr8, ets8] = FISTA(Problem, x0, eps, MaxIter, 'green', '-', 0);
+[y6, iters6, loss6, loss_test6, errors6, errors_test6, rates6, norms6] = FISTA(Problem, x0, eps, MaxIter, 'green', '-', 0);
 [L7,D7] = ldl(AA); y7 = L7' \ ((L7\bb) ./ diag(D7));
 [L8, D8, P8, y8] = LDL(AA, bb, true);
 [L9, D9, P9, y9] = LDL(AA, bb, false);
@@ -84,7 +103,7 @@ e2 = sqrt(immse(b, A*y2)); r2 = norm(b-A*y2)/norm(b); fprintf('HB \t (red): \t\t
 %e3 = sqrt(immse(b, A*y3)); r3 = norm(b-A*y3)/norm(b); fprintf('ACG \t (green): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters3, e3, r3);
 %e4 = sqrt(immse(b, A*y4)); r4 = norm(b-A*y4)/norm(b); fprintf('ADAM \t (blue): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters4, e4, r4);
 e5 = sqrt(immse(b, A*y5)); r5 = norm(b-A*y5)/norm(b); fprintf('NADAM \t (blue): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters5, e5, r5);
-e6 = sqrt(immse(b, A*y6)); r6 = norm(b-A*y6)/norm(b); fprintf('FISTA \t (green): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters8, e6, r6);
+e6 = sqrt(immse(b, A*y6)); r6 = norm(b-A*y6)/norm(b); fprintf('FISTA \t (green): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters6, e6, r6);
 
 r7 = norm(bb-AA*y7)/norm(bb); fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r7, norm(AA), norm(L7), norm(D7));
 r8 = norm(bb-AA*y8)/norm(bb); fprintf('LDL \t (with pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r8, norm(AA), norm(L8), norm(D8));

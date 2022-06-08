@@ -68,7 +68,7 @@ for g=1:size(grid,1)
     [Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
     
-    [x, iters, errors_train, errors_test] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+    [x, iters, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
     
     e = sqrt(immse(b, A*x)); r = norm(b-A*x)/norm(b);
     fprintf('\t iterations=%d \t rmse=%e \t residual=%e \n', iters, e, r);
@@ -76,21 +76,29 @@ for g=1:size(grid,1)
     rmses(end+1) = e;
     residuals(end+1) = r;
     save(sprintf('results/x%d.mat',g),'x');
-    save(sprintf('results/errors_train%d.mat',g),'errors_train');
+    save(sprintf('results/loss%d.mat',g),'loss');
+    save(sprintf('results/loss_test%d.mat',g),'loss_test');
+    save(sprintf('results/errors%d.mat',g),'errors');
     save(sprintf('results/errors_test%d.mat',g),'errors_test');
+    save(sprintf('results/rates%d.mat',g),'rates');
+    save(sprintf('results/norms%d.mat',g),'norms');
 end
 save('results/rmse.mat','rmses');
-save('results/residual.mat','residuals');
+save('results/residuals.mat','residuals');
 save('results/grid.mat','grid');
 
 % best result
 disp("Best result:");
-load('results/residual.mat'); load('results/grid.mat'); 
+load('results/residuals.mat'); load('results/grid.mat'); 
 [value,pos] = min(residuals); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
-load(sprintf('results/x%d.mat',pos));
-load(sprintf('results/errors_train%d.mat',pos));
-load(sprintf('results/errors_test%d.mat',pos));
 
+load(sprintf('results/x%d.mat',g),'x');
+load(sprintf('results/loss%d.mat',g),'loss');
+load(sprintf('results/loss_test%d.mat',g),'loss_test');
+load(sprintf('results/errors%d.mat',g),'errors');
+load(sprintf('results/errors_test%d.mat',g),'errors_test');
+load(sprintf('results/rates%d.mat',g),'rates');
+load(sprintf('results/norms%d.mat',g),'norms');
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

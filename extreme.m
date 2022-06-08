@@ -21,7 +21,7 @@ function [Problem] = extreme(A, b, A_test, b_test, sigmaType, hiddenDim, lambda,
     Problem.A = sigma(Problem.Q*Problem.W1, sigmaType);
     Problem.A_test = sigma(Problem.T*Problem.W1, sigmaType);
     Problem.b_test = b_test;
-    Problem.W2 = rand(size(Problem.A,2),1);
+    Problem.W2 = rand(size(Problem.A,2),size(Problem.b,2));
     
     Problem.output = @output;
     function y = output(x)
@@ -42,7 +42,15 @@ function [Problem] = extreme(A, b, A_test, b_test, sigmaType, hiddenDim, lambda,
     Problem.cost = @cost;
     function f = cost(x)
         y = output(x);
-        f = mean((Problem.b - y).^2) + Problem.l*(x'*x);
+        %f = mean(sum((Problem.b - y).^2)) + Problem.l*(x'*x);
+        f = immse(Problem.b, y) + Problem.l*norm(x);
+    end
+
+    Problem.cost_test = @cost_test;
+    function f = cost_test(x)
+        y = test(x);
+        %f = mean(sum((Problem.b - y).^2)) + Problem.l*(x'*x);
+        f = immse(Problem.b_test, y) + Problem.l*norm(x);
     end
 
     Problem.grad = @grad;

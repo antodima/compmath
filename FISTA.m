@@ -1,8 +1,10 @@
-function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
+function [x, i, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
 
 %function [x] = FISTA(p, x0, eps, t, MaxIter)
 %   Apply the FISTA algorithm.
-    errors = []; errors_test = []; % history of losses
+    loss = []; loss_test = []; 
+    errors = []; errors_test = [];
+    rates = []; norms = [];
 
     A = Problem.A;
     b = Problem.b;
@@ -15,6 +17,7 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
     f = Problem.cost;
     if isfield(Problem,'test')
         t = Problem.test;
+        f_test = Problem.cost_test;
     end
     grad_f = Problem.grad;
     grad2_f = Problem.grad2;
@@ -59,10 +62,13 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
         y0 = y1;
         beta0 = beta1;
         
-        if isfield(Problem,'A_test')
-            % add to history
-            errors(end+1) = norm(b-A*x)/norm(b);
+        norms(end+1) = ng;
+        loss(end+1) = v;
+        errors(end+1) = norm(b-A*x)/norm(b);
+        if isfield(Problem,'A_test')         
             errors_test(end+1) = norm(b_test-A_test*x)/norm(b_test);
+            v_test = f_test(x0);
+            loss_test(end+1) = v_test;
         end
         
         if Problem.name == "quadratic"
@@ -71,6 +77,11 @@ function [x, i, errors, errors_test] = FISTA(Problem, x0, eps, MaxIter, color, s
         if verbose == 1
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
+    end
+    
+    d = abs(loss - loss(end));
+    for k=1:size(d,2)-2
+        rates(end+1) = log(d(k+1)) / log(d(k));
     end
     
 end
