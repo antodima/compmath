@@ -46,6 +46,15 @@ xlabel('Epochs')
 ylabel('Convergence rate');
 hold off;
 
+
+fstar = min(loss);
+loss_diffs = loss - fstar;
+figure();
+plot(loss_diffs,'-','LineWidth',1);
+xlabel('Epochs')
+ylabel('f(x) - f*');
+hold off;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 A = cup_x_train; b = cup_y_train; I = eye(size(A,2)); l = 1e-4;

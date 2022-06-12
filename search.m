@@ -50,20 +50,24 @@ rmdir('results','s')
 mkdir('results')
 
 % hyperparameters
-hiddenSizes = 100:100:500;
-epochs = 100:200:1000;
-learningRates = [0.001,0.01,0.1];
-lambdas = [0.0001,0.001,0.01,0.1];
-grid = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
-rmses = []; residuals = [];
+hiddenSizes = 10:30:100;
+epochs = 1000;
+learningRates = [0.01,0.1];
+lambdas = [0.001,0.01];
+taus = [0.001,0.01,0.1];
+grid = gridSearch(hiddenSizes, epochs, learningRates, lambdas, taus);
+rmses = []; residuals = []; losses = [];
+rmses_gd = []; residuals_gd = []; losses_gd = [];
 for g=1:size(grid,1)
     params = grid(g,:);
     h = params(1);
     MaxIter = params(2);
     lr = params(3);
     l = params(4);
-    eps = 1e-8; tau = 0.9;
-    fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e \n', g, h, MaxIter, lr, l);
+    tau = params(5);
+    m = 0.9;
+    eps = 20;
+    fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e, tau=%1.4e\n', g, h, MaxIter, lr, l, tau);
     
     [Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
@@ -75,6 +79,7 @@ for g=1:size(grid,1)
     
     rmses(end+1) = e;
     residuals(end+1) = r;
+    losses(end+1) = loss(end);
     save(sprintf('results/x%d.mat',g),'x');
     save(sprintf('results/loss%d.mat',g),'loss');
     save(sprintf('results/loss_test%d.mat',g),'loss_test');
@@ -82,15 +87,34 @@ for g=1:size(grid,1)
     save(sprintf('results/errors_test%d.mat',g),'errors_test');
     save(sprintf('results/rates%d.mat',g),'rates');
     save(sprintf('results/norms%d.mat',g),'norms');
+
+
+    [x_gd, iters_gd, loss_gd, loss_test_gd, errors_gd, errors_test_gd, rates_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 0);
+
+    e_gd = sqrt(immse(b, A*x_gd)); r_gd = norm(b-A*x_gd)/norm(b);
+    fprintf('\t iterations=%d \t rmse=%e \t residual=%e \n', iters_gd, e_gd, r_gd);
+
+    rmses_gd(end+1) = e;
+    residuals_gd(end+1) = r;
+    losses_gd(end+1) = loss_gd(end);
+    save(sprintf('results/x_gd%d.mat',g),'x_gd');
+    save(sprintf('results/loss_gd%d.mat',g),'loss_gd');
+    save(sprintf('results/loss_test_gd%d.mat',g),'loss_test_gd');
+    save(sprintf('results/errors_gd%d.mat',g),'errors_gd');
+    save(sprintf('results/errors_test_gd%d.mat',g),'errors_test_gd');
+    save(sprintf('results/rates_gd%d.mat',g),'rates_gd');
+    save(sprintf('results/norms_gd%d.mat',g),'norms_gd');
 end
 save('results/rmse.mat','rmses');
 save('results/residuals.mat','residuals');
+save('results/losses.mat','losses')
 save('results/grid.mat','grid');
 
 % best result
 disp("Best result:");
 load('results/residuals.mat'); load('results/grid.mat'); 
-[value,pos] = min(residuals); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
+% [value,pos] = min(residuals); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
+[value,pos] = min(losses); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos,:), value); 
 
 load(sprintf('results/x%d.mat',g),'x');
 load(sprintf('results/loss%d.mat',g),'loss');
@@ -102,8 +126,8 @@ load(sprintf('results/norms%d.mat',g),'norms');
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function g = gridSearch(hiddenSizes,epochs,learningRates,lambdas)
-    sets = {hiddenSizes,epochs,learningRates,lambdas};
-    [H,E,LR,L] = ndgrid(sets{:});
-    g = [H(:) E(:) LR(:) L(:)];
+function g = gridSearch(hiddenSizes,epochs,learningRates,lambdas,taus)
+    sets = {hiddenSizes,epochs,learningRates,lambdas,taus};
+    [H,E,LR,L,T] = ndgrid(sets{:});
+    g = [H(:) E(:) LR(:) L(:) T(:)];
 end

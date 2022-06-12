@@ -54,7 +54,7 @@ function [x, i, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Prob
         ng = norm(g);
         
         beta1 = (1+sqrt(1+4*beta0^2))/2;
-        x = y0 - (1/L)*g;
+        x = y0 - (1/L)*g;   
         x1 = x;
         y1 = x1 + ((beta0-1)/beta1)*(x1 - x0);
         
