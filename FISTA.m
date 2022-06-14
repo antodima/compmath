@@ -78,10 +78,17 @@ function [x, i, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Prob
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
     end
-    
-    d = abs(loss - loss(end));
-    for k=1:size(d,2)-2
-        rates(end+1) = log(d(k+1)) / log(d(k));
+
+    fstar = min(loss);
+    e = abs(loss - fstar);
+    rates = zeros(length(e)-2,1);
+    for n = 2:(length(e)-1)
+        rates(n-1) = log(e(n+1)/e(n))/log(e(n)/e(n-1));       
     end
+
+%     d = abs(loss - loss(end));
+%     for k=1:size(d,2)-2
+%         rates(end+1) = log(d(k+1)) / log(d(k));
+%     end
     
 end

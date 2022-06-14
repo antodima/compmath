@@ -22,37 +22,38 @@ load(sprintf('results/errors_test%d.mat',pos),'errors_test');
 load(sprintf('results/rates%d.mat',pos),'rates');
 load(sprintf('results/norms%d.mat',pos),'norms');
 
-figure();
-plot(loss,'-','LineWidth',1);
-hold on;
-plot(loss_test,'-','LineWidth',1);
-xlabel('Epochs')
-ylabel('MSE');
-legend('training set','test set');
-hold off;
+% figure();
+% plot(loss,'-','LineWidth',1);
+% hold on;
+% plot(loss_test,'-','LineWidth',1);
+% xlabel('iterations')
+% ylabel('MSE');
+% legend('training set','test set');
+% hold off;
 
-figure();
-plot(errors,'-','LineWidth',1);
-hold on;
-plot(errors_test,'-','LineWidth',1);
-xlabel('Epochs')
-ylabel('Residual');
-legend('training set','test set');
-hold off;
+% figure();
+% plot(errors,'-','LineWidth',1);
+% hold on;
+% plot(errors_test,'-','LineWidth',1);
+% xlabel('iterations')
+% ylabel('Residual');
+% legend('training set','test set');
+% hold off;
 
 figure();
 plot(rates,'-','LineWidth',1);
-xlabel('Epochs')
-ylabel('Convergence rate');
+xlabel('iterations')
+ylabel('convergence rate');
 hold off;
 
 
 fstar = min(loss);
-loss_diffs = loss - fstar;
+loss_diffs = ((loss - fstar)/fstar);
+% loss_diffs = log((loss - fstar) /fstar);
 figure();
-plot(loss_diffs,'-','LineWidth',1);
-xlabel('Epochs')
-ylabel('f(x) - f*');
+semilogy(loss_diffs,'-','LineWidth',1);
+xlabel('iterations')
+ylabel('log((f(x) - f*)/f*)');
 hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
