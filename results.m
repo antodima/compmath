@@ -90,9 +90,9 @@ disp("======================================================================");
 disp("CUP results:");
 fprintf('FISTA \t\t\t | residual=%1.4e | time=%2.5f seconds | f*=%1.4e \n', residual, elapsed_time, losses(end));
 fprintf('GD \t\t\t | residual=%1.4e | time=%2.5f seconds | f*=%1.4e \n', residual_gd, elapsed_time_gd, losses_gd(end));
+fprintf('LDL (matlab) \t\t | residual=%1.4e | time=%2.5f seconds \n', res_train_3, t3);
 fprintf('LDL (no pivot) \t\t | residual=%1.4e | time=%2.5f seconds \n', res_train_1, t1);
 fprintf('LDL (with pivot) \t | residual=%1.4e | time=%2.5f seconds \n', res_train_2, t2);
-fprintf('LDL (matlab) \t\t | residual=%1.4e | time=%2.5f seconds \n', res_train_3, t3);
 
 %{
 CUP results:
