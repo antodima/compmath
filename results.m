@@ -28,24 +28,6 @@ load(sprintf('results/losses_gd%d.mat',pos_gd));
 load(sprintf('results/norms_gd%d.mat',pos_gd));
 load(sprintf('results/residual_gd%d.mat',pos_gd));
 
-% figure();
-% plot(loss,'-','LineWidth',1);
-% hold on;
-% plot(loss_test,'-','LineWidth',1);
-% xlabel('iterations')
-% ylabel('MSE');
-% legend('training set','test set');
-% hold off;
-
-% figure();
-% plot(errors,'-','LineWidth',1);
-% hold on;
-% plot(errors_test,'-','LineWidth',1);
-% xlabel('iterations')
-% ylabel('Residual');
-% legend('training set','test set');
-% hold off;
-
 fstar1 = losses(end);
 e1 = abs(losses - fstar1);
 rates1 = zeros(length(e1)-3,1);
@@ -68,6 +50,7 @@ xlabel('t')
 ylabel('log|f(x_{t+1}) - f^*| / log|f(x_t) - f^*|');
 legend('FISTA','GD');
 hold off;
+grid on;
 
 figure();
 fstar1 = losses(end);
@@ -81,6 +64,7 @@ xlabel('t')
 ylabel('log( f(x_t) - f^* )');
 legend('FISTA','GD');
 hold off;
+grid on;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
