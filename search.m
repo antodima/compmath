@@ -69,13 +69,15 @@ for g=1:size(grid_fista,1)
     [Problem] = extreme(X, y, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
     
-    [x, iters, losses, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+    tic; [x, iters, losses, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+    elapsed_time=toc;
     fprintf('\t iteration=%d \t loss=%e \n', iters, losses(end));
     
     grid_losses_fista(end+1) = losses(end);
     save(sprintf('results/x%d.mat',g),'x');
     save(sprintf('results/losses%d.mat',g),'losses');
     save(sprintf('results/norms%d.mat',g),'norms');
+    save(sprintf('results/elapsed_time%d.mat',g),'elapsed_time');
     residual = norm(b-A*x)/norm(b); save(sprintf('results/residual%d.mat',g),'residual');
 end
 save('results/grid_losses_fista.mat','grid_losses_fista')
@@ -104,13 +106,15 @@ for g=1:size(grid_gd,1)
     [Problem] = extreme(X, y, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
     
-    [x_gd, iters_gd, losses_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 0);
+    tic; [x_gd, iters_gd, losses_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 0);
+    elapsed_time_gd=toc;
     fprintf('\t iterations=%d \t loss=%e \n', iters_gd, losses_gd(end));
 
     grid_losses_gd(end+1) = losses_gd(end);
     save(sprintf('results/x_gd%d.mat',g),'x_gd');
     save(sprintf('results/losses_gd%d.mat',g),'losses_gd');
     save(sprintf('results/norms_gd%d.mat',g),'norms_gd');
+    save(sprintf('results/elapsed_time_gd%d.mat',g),'elapsed_time_gd');
     residual_gd = norm(b-A*x_gd)/norm(b); save(sprintf('results/residual_gd%d.mat',g),'residual_gd');
     
 end
