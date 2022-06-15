@@ -88,11 +88,11 @@ res_train_3 = norm(bb-AA*y3)/norm(bb);
 hold off;
 disp("======================================================================");
 disp("CUP results:");
-fprintf('FISTA \t\t\t residual=%1.4e \t time=%2.5f seconds \n', residual, elapsed_time);
-fprintf('GD \t\t\t residual=%1.4e \t time=%2.5f seconds \n', residual_gd, elapsed_time_gd);
-fprintf('LDL (no pivot) \t\t residual=%1.4e \t time=%2.5f seconds \n', res_train_1, t1);
-fprintf('LDL (with pivot) \t residual=%1.4e \t time=%2.5f seconds \n', res_train_2, t2);
-fprintf('LDL (matlab) \t\t residual=%1.4e \t time=%2.5f seconds \n', res_train_3, t3);
+fprintf('FISTA \t\t\t | residual=%1.4e \t | time=%2.5f seconds \n', residual, elapsed_time);
+fprintf('GD \t\t\t | residual=%1.4e \t | time=%2.5f seconds \n', residual_gd, elapsed_time_gd);
+fprintf('LDL (no pivot) \t\t | residual=%1.4e \t | time=%2.5f seconds \n', res_train_1, t1);
+fprintf('LDL (with pivot) \t | residual=%1.4e \t | time=%2.5f seconds \n', res_train_2, t2);
+fprintf('LDL (matlab) \t\t | residual=%1.4e \t | time=%2.5f seconds \n', res_train_3, t3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
