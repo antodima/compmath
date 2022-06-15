@@ -94,6 +94,15 @@ fprintf('LDL (no pivot) \t\t | residual=%1.4e \t | time=%2.5f seconds \n', res_t
 fprintf('LDL (with pivot) \t | residual=%1.4e \t | time=%2.5f seconds \n', res_train_2, t2);
 fprintf('LDL (matlab) \t\t | residual=%1.4e \t | time=%2.5f seconds \n', res_train_3, t3);
 
+%{
+CUP results:
+FISTA              	 | residual=2.0110e-01 	 | time=0.13540 seconds 
+GD                   | residual=3.5808e-01 	 | time=0.30490 seconds 
+LDL (no pivot) 		 | residual=1.4463e-15 	 | time=0.00031 seconds 
+LDL (with pivot) 	 | residual=1.7738e-15 	 | time=0.00053 seconds 
+LDL (matlab) 		 | residual=1.8435e-15 	 | time=0.00011 seconds 
+%}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %{
 figure();
