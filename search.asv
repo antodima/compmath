@@ -89,8 +89,8 @@ save('results/grid.mat','grid');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % hyperparameters for grid_gd
 hiddenSizes = 10:30:100;
-epochs = 1000;
-learningRates = [0.001,0.01];
+epochs = 3000;
+learningRates = [0.01,0.1];
 lambdas = [0.001,0.01];
 grid_gd = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
 rmses_gd = []; residuals_gd = []; losses_gd = [];
@@ -103,7 +103,7 @@ for g=1:size(grid_gd,1)
     l = params(4);
     m = 0.9;
     tau = 0;
-    eps = 20;
+    eps = 10;
     fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
     [Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);

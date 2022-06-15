@@ -11,8 +11,8 @@ cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% results
 
-load('results/residuals.mat'); load('results/grid.mat'); 
-[value,pos] = min(residuals); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
+load('results/losses.mat'); load('results/grid.mat'); 
+[value,pos] = min(losses); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos,:), value); 
 
 load(sprintf('results/x%d.mat',pos),'x');
 load(sprintf('results/loss%d.mat',pos),'loss');
@@ -21,6 +21,19 @@ load(sprintf('results/errors%d.mat',pos),'errors');
 load(sprintf('results/errors_test%d.mat',pos),'errors_test');
 load(sprintf('results/rates%d.mat',pos),'rates');
 load(sprintf('results/norms%d.mat',pos),'norms');
+
+%% results GD
+
+load('results/losses_gd.mat');
+[value_gd,pos_gd] = min(losses_gd); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos_gd,:), value_gd); 
+
+load(sprintf('results/x_gd%d.mat',pos),'x_gd');
+load(sprintf('results/loss_gd%d.mat',pos),'loss_gd');
+load(sprintf('results/loss_test_gd%d.mat',pos),'loss_test_gd');
+load(sprintf('results/errors_gd%d.mat',pos),'errors_gd');
+load(sprintf('results/errors_test_gd%d.mat',pos),'errors_test_gd');
+load(sprintf('results/rates_gd%d.mat',pos),'rates_gd');
+load(sprintf('results/norms_gd%d.mat',pos),'norms_gd');
 
 % figure();
 % plot(loss,'-','LineWidth',1);
@@ -42,6 +55,8 @@ load(sprintf('results/norms%d.mat',pos),'norms');
 
 figure();
 plot(rates,'-','LineWidth',1);
+hold on;
+plot(rates_gd,'-','LineWidth',1);
 xlabel('iterations')
 ylabel('convergence rate');
 hold off;

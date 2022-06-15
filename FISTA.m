@@ -83,7 +83,8 @@ function [x, i, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Prob
     e = abs(loss - fstar);
     rates = zeros(length(e)-2,1);
     for n = 2:(length(e)-1)
-        rates(n-1) = log(e(n+1)/e(n))/log(e(n)/e(n-1));       
+        % rates(n-1) = log(e(n+1)/e(n))/log(e(n)/e(n-1));       
+        rates(n-1) = log(e(n+1))/log(e(n));       
     end
 
 %     d = abs(loss - loss(end));

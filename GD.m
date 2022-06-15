@@ -62,12 +62,20 @@ function [x, i, loss, loss_test, errors, errors_test, rates, norms] = GD(Problem
                 fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
             end
         else
-            [as, lsiters] = BacktrackingLS(f, grad_f, x, lr, m1, tau, 1000);
-            
-            x = x - as*g;
+            % [as, lsiters] = BacktrackingLS(f, grad_f, x, lr, m1, tau, 1000);
+            % x = x - as*g;
+            x = x - lr*g;
+
             if verbose == 1
-                fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lsiters=%d \t alpha=%e \n' , i, v, ng, lsiters, as);
+                fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lr=%e \n' , i, v, ng, lr);
             end
+        end
+
+        fstar = min(loss);
+        e = abs(loss - fstar);
+        rates = zeros(length(e)-2,1);
+        for n = 2:(length(e)-1)
+            rates(n-1) = log(e(n+1))/log(e(n));
         end
     end
     
