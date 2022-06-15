@@ -42,7 +42,6 @@ cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% the problem
 X = cup_x_train; y = cup_y_train;
-X_test = cup_x_test; y_test = cup_y_test;
 
 format short e;
 
@@ -52,14 +51,13 @@ mkdir('results')
 % hyperparameters
 hiddenSizes = 10:30:100;
 epochs = 3000;
-learningRates = [0.01,0.1];
-lambdas = [0.001,0.01];
-grid = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
-
-rmses = []; residuals = []; losses = [];
-
-for g=1:size(grid,1)
-    params = grid(g,:);
+learningRates = [0.001, 0.01, 0.1];
+lambdas = [0.001, 0.01, 0.1];
+grid_fista = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
+grid_losses_fista = [];
+disp("Grid search FISTA:");
+for g=1:size(grid_fista,1)
+    params = grid_fista(g,:);
     h = params(1);
     MaxIter = params(2);
     lr = params(3);
@@ -68,23 +66,21 @@ for g=1:size(grid,1)
     eps = 10;
     fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
-    [Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);
+    [Problem] = extreme(X, y, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
     
-    [x, iters, loss, loss_test, errors, errors_test, rates, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
-    fprintf('\t iteration=%d \t loss=%e \n', iters, loss(end));
+    [x, iters, losses, rates, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+    fprintf('\t iteration=%d \t loss=%e \n', iters, losses(end));
     
-    losses(end+1) = loss(end);
+    grid_losses_fista(end+1) = losses(end);
     save(sprintf('results/x%d.mat',g),'x');
-    save(sprintf('results/loss%d.mat',g),'loss');
-    save(sprintf('results/loss_test%d.mat',g),'loss_test');
-    save(sprintf('results/errors%d.mat',g),'errors');
-    save(sprintf('results/errors_test%d.mat',g),'errors_test');
+    save(sprintf('results/losses%d.mat',g),'losses');
     save(sprintf('results/rates%d.mat',g),'rates');
     save(sprintf('results/norms%d.mat',g),'norms');
+    residual = norm(b-A*x)/norm(b); save(sprintf('results/residual%d.mat',g),'residual');
 end
-save('results/losses.mat','losses')
-save('results/grid.mat','grid');
+save('results/grid_losses_fista.mat','grid_losses_fista')
+save('results/grid_fista.mat','grid_fista');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % hyperparameters for grid_gd
@@ -93,8 +89,8 @@ epochs = 1000;
 learningRates = [0.001,0.01];
 lambdas = [0.001,0.01];
 grid_gd = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
-rmses_gd = []; residuals_gd = []; losses_gd = [];
-
+grid_losses_gd = [];
+disp("Grid search GD:");
 for g=1:size(grid_gd,1)
     params = grid_gd(g,:);
     h = params(1);
@@ -106,33 +102,32 @@ for g=1:size(grid_gd,1)
     eps = 20;
     fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
-    [Problem] = extreme(X, y, X_test, y_test, "sigmoid", h, l, false);
+    [Problem] = extreme(X, y, "sigmoid", h, l, false);
     A = Problem.A; b = Problem.b; x0 = Problem.W2;
     
-    [x_gd, iters_gd, loss_gd, loss_test_gd, errors_gd, errors_test_gd, rates_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 1);
-    fprintf('\t iterations=%d \t loss=%e \n', iters_gd, loss_gd(end));
+    [x_gd, iters_gd, losses_gd, rates_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 0);
+    fprintf('\t iterations=%d \t loss=%e \n', iters_gd, losses_gd(end));
 
-    losses_gd(end+1) = loss_gd(end);
+    grid_losses_gd(end+1) = losses_gd(end);
     save(sprintf('results/x_gd%d.mat',g),'x_gd');
-    save(sprintf('results/loss_gd%d.mat',g),'loss_gd');
-    save(sprintf('results/loss_test_gd%d.mat',g),'loss_test_gd');
-    save(sprintf('results/errors_gd%d.mat',g),'errors_gd');
-    save(sprintf('results/errors_test_gd%d.mat',g),'errors_test_gd');
+    save(sprintf('results/losses_gd%d.mat',g),'losses_gd');
     save(sprintf('results/rates_gd%d.mat',g),'rates_gd');
     save(sprintf('results/norms_gd%d.mat',g),'norms_gd');
+    residual_gd = norm(b-A*x_gd)/norm(b); save(sprintf('results/residual_gd%d.mat',g),'residual_gd');
+    
 end
+save('results/grid_losses_gd.mat','grid_losses_gd')
+save('results/grid_gd.mat','grid_gd');
 
-save('results/losses_gd.mat','losses_gd')
 
 % best result
 disp("Best result (FISTA):");
-load('results/losses.mat'); load('results/grid.mat'); 
-% [value,pos] = min(residuals); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, residual=%1.4e \n', grid(pos,:), value); 
-[value,pos] = min(losses); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos,:), value); 
+load('results/grid_losses_fista.mat'); load('results/grid_fista.mat');
+[value, pos] = min(grid_losses_fista); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_fista(pos,:), value); 
 
 disp("Best result (GD):");
-load('results/losses_gd.mat');
-[value_gd,pos_gd] = min(losses_gd); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos_gd,:), value_gd); 
+load('results/grid_losses_gd.mat');load('results/grid_gd.mat'); 
+[value_gd, pos_gd] = min(grid_losses_gd); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_gd(pos_gd,:), value_gd); 
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

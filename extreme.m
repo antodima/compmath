@@ -1,4 +1,4 @@
-function [Problem] = extreme(A, b, A_test, b_test, sigmaType, hiddenDim, lambda, use_sign)
+function [Problem] = extreme(A, b, sigmaType, hiddenDim, lambda, use_sign)
 % MSE with regularization using extreme learning
 
     d = length(b);
@@ -13,27 +13,16 @@ function [Problem] = extreme(A, b, A_test, b_test, sigmaType, hiddenDim, lambda,
     Problem.h = h;
     Problem.Q = A;
     Problem.b = b;
-    Problem.T = A_test;
     Problem.l = lambda;
     Problem.use_sign = use_sign;
     Problem.W1 = rand(n,h);
     Problem.bias = rand(1,1);
     Problem.A = sigma(Problem.Q*Problem.W1, sigmaType);
-    Problem.A_test = sigma(Problem.T*Problem.W1, sigmaType);
-    Problem.b_test = b_test;
     Problem.W2 = rand(size(Problem.A,2),size(Problem.b,2));
     
     Problem.output = @output;
     function y = output(x)
         y = Problem.A*x+Problem.bias;
-        if Problem.use_sign
-            y = sign(y);
-        end
-    end
-
-    Problem.test = @test;
-    function y = test(x)
-        y = Problem.A_test*x+Problem.bias;
         if Problem.use_sign
             y = sign(y);
         end
@@ -44,13 +33,6 @@ function [Problem] = extreme(A, b, A_test, b_test, sigmaType, hiddenDim, lambda,
         y = output(x);
         %f = mean(sum((Problem.b - y).^2)) + Problem.l*(x'*x);
         f = immse(Problem.b, y) + Problem.l*norm(x);
-    end
-
-    Problem.cost_test = @cost_test;
-    function f = cost_test(x)
-        y = test(x);
-        %f = mean(sum((Problem.b - y).^2)) + Problem.l*(x'*x);
-        f = immse(Problem.b_test, y) + Problem.l*norm(x);
     end
 
     Problem.grad = @grad;

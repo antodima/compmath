@@ -75,12 +75,12 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 %}
 
 %% the solutions
-[y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-', 0);
-[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-', 0);
+[y1, iters1] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, 'black', '-', 1);
+%[y2, iters2] = HB(Problem, x0, eps, lr, beta, MaxIter, 'red', '-', 0);
 %[y3, iters3] = ACG(Problem, x0, eps, lr, beta, MaxIter, false, 'green', '-', 0);
 %[y4, iters4] = ADAM(Problem, x0, eps, 4, beta, 500, false, 'blue', '-', 0);
-[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-', 0);
-[y6, iters8, loss8, loss_test8, errors8, errors_test8, rates8, norms8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+%[y5, iters5] = ADAM(Problem, x0, eps, 4, 0.9, MaxIter, true, 'yellow', '-', 0);
+%[y6, iters8, loss8, loss_test8, errors8, errors_test8, rates8, norms8] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
 
 % https://www.mit.edu/~9.520/spring10/Classes/class04-rls.pdf
 [L7,D7] = ldl(AA); y7 = L7' \ ((L7\bb) ./ diag(D7));
@@ -90,11 +90,11 @@ I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 format short e;
 disp("======================================================================");
 e1 = sqrt(immse(b, A*y1)); r1 = norm(b-A*y1)/norm(b); fprintf('GD \t (black): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters1, e1, r1);
-e2 = sqrt(immse(b, A*y2)); r2 = norm(b-A*y2)/norm(b); fprintf('HB \t (red): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters2, e2, r2);
+%e2 = sqrt(immse(b, A*y2)); r2 = norm(b-A*y2)/norm(b); fprintf('HB \t (red): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters2, e2, r2);
 %e3 = sqrt(immse(b, A*y3)); r3 = norm(b-A*y3)/norm(b); fprintf('ACG \t (green): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters3, e3, r3);
 %e4 = sqrt(immse(b, A*y4)); r4 = norm(b-A*y4)/norm(b); fprintf('ADAM \t (blue): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters4, e4, r4);
-e5 = sqrt(immse(b, A*y5)); r5 = norm(b-A*y5)/norm(b); fprintf('NADAM \t (yellow): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters5, e5, r5);
-e6 = sqrt(immse(b, A*y6)); r6 = norm(b-A*y6)/norm(b); fprintf('FISTA \t (blue): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters8, e6, r6);
+%e5 = sqrt(immse(b, A*y5)); r5 = norm(b-A*y5)/norm(b); fprintf('NADAM \t (yellow): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters5, e5, r5);
+%e6 = sqrt(immse(b, A*y6)); r6 = norm(b-A*y6)/norm(b); fprintf('FISTA \t (blue): \t\t iters=%d \t rmse=%e \t residual=%e \n', iters8, e6, r6);
 
 r7 = norm(bb-AA*y7)/norm(bb); fprintf('LDL \t (matlab): \t\t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r7, norm(AA), norm(L7), norm(D7));
 r8 = norm(bb-AA*y8)/norm(bb); fprintf('LDL \t (with pivoting): \t ----- \t\t residual=%e \t ∥A∥=%f ∥L∥=%f ∥D∥=%f\n', r8, norm(AA), norm(L8), norm(D8));

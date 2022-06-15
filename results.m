@@ -10,30 +10,25 @@ cup_x_test = table2array(cup_train(1301:end,1:20));
 cup_y_test = table2array(cup_train(1301:end,21:22));
 
 %% results
+load('results/grid_losses_fista.mat');
+load('results/grid_fista.mat');
+load('results/grid_losses_gd.mat');
+load('results/grid_gd.mat');
 
-load('results/losses.mat'); load('results/grid.mat'); 
-[value,pos] = min(losses); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos,:), value); 
+disp("Best result (FISTA):");
+[value, pos] = min(grid_losses_fista); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_fista(pos,:), value); 
+disp("Best result (GD):");
+[value_gd, pos_gd] = min(grid_losses_gd); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_gd(pos_gd,:), value_gd); 
 
-load(sprintf('results/x%d.mat',pos),'x');
-load(sprintf('results/loss%d.mat',pos),'loss');
-load(sprintf('results/loss_test%d.mat',pos),'loss_test');
-load(sprintf('results/errors%d.mat',pos),'errors');
-load(sprintf('results/errors_test%d.mat',pos),'errors_test');
-load(sprintf('results/rates%d.mat',pos),'rates');
-load(sprintf('results/norms%d.mat',pos),'norms');
-
-%% results GD
-
-load('results/losses_gd.mat');
-[value_gd,pos_gd] = min(losses_gd); fprintf('Best model: h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid(pos_gd,:), value_gd); 
-
-load(sprintf('results/x_gd%d.mat',pos),'x_gd');
-load(sprintf('results/loss_gd%d.mat',pos),'loss_gd');
-load(sprintf('results/loss_test_gd%d.mat',pos),'loss_test_gd');
-load(sprintf('results/errors_gd%d.mat',pos),'errors_gd');
-load(sprintf('results/errors_test_gd%d.mat',pos),'errors_test_gd');
-load(sprintf('results/rates_gd%d.mat',pos),'rates_gd');
-load(sprintf('results/norms_gd%d.mat',pos),'norms_gd');
+load(sprintf('results/x%d.mat',pos));
+load(sprintf('results/losses%d.mat',pos));
+load(sprintf('results/rates%d.mat',pos));
+load(sprintf('results/norms%d.mat',pos));
+load(sprintf('results/residual%d.mat',pos));
+load(sprintf('results/losses_gd%d.mat',pos_gd));
+load(sprintf('results/rates_gd%d.mat',pos_gd));
+load(sprintf('results/norms_gd%d.mat',pos_gd));
+load(sprintf('results/residual_gd%d.mat',pos_gd));
 
 % figure();
 % plot(loss,'-','LineWidth',1);
@@ -54,21 +49,25 @@ load(sprintf('results/norms_gd%d.mat',pos),'norms_gd');
 % hold off;
 
 figure();
-plot(rates,'-','LineWidth',1);
+plot(rates,'-','LineWidth',2);
 hold on;
-plot(rates_gd,'-','LineWidth',1);
-xlabel('iterations')
-ylabel('convergence rate');
+plot(rates_gd,'-','LineWidth',2);
+xlabel('t')
+ylabel('log|f(x_{t+1}) - f^*| / log|f(x_t) - f^*|');
+legend('FISTA','GD');
 hold off;
 
-
-fstar = min(loss);
-loss_diffs = ((loss - fstar)/fstar);
-% loss_diffs = log((loss - fstar) /fstar);
 figure();
-semilogy(loss_diffs,'-','LineWidth',1);
-xlabel('iterations')
-ylabel('log((f(x) - f*)/f*)');
+fstar1 = losses(end);
+diffs1 = losses - fstar1;
+semilogy(diffs1,'-','LineWidth',2);
+hold on;
+fstar2 = losses_gd(end);
+diffs2 = losses_gd - fstar2;
+semilogy(diffs2,'-','LineWidth',2);
+xlabel('t')
+ylabel('log( f(x_t) - f^* )');
+legend('FISTA','GD');
 hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,19 +82,21 @@ AA_test = A_test'*A_test+l*I; bb_test = A_test'*b_test;
 [L2, D2, P2, y2] = LDL(AA, bb, true);
 [L3,D3] = ldl(AA); y3 = L3' \ ((L3\bb) ./ diag(D3));
 
-res_train_1 = norm(bb-AA*y1)/norm(bb); res_test_1 = norm(bb_test-AA_test*y1)/norm(bb_test);
-res_train_2 = norm(bb-AA*y2)/norm(bb); res_test_2 = norm(bb_test-AA_test*y2)/norm(bb_test);
-res_train_3 = norm(bb-AA*y3)/norm(bb); res_test_3 = norm(bb_test-AA_test*y3)/norm(bb_test);
+res_train_1 = norm(bb-AA*y1)/norm(bb);
+res_train_2 = norm(bb-AA*y2)/norm(bb);
+res_train_3 = norm(bb-AA*y3)/norm(bb);
 
 hold off;
 disp("======================================================================");
 disp("CUP results:");
-fprintf('FISTA \t\t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', value, errors_test(end));
-fprintf('LDL (no pivot) \t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_1, res_test_1);
-fprintf('LDL (with pivot) \t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_2, res_test_2);
-fprintf('LDL (matlab) \t\t residual (train)=%1.4e \t residual (test)=%1.4e \n', res_train_3, res_test_3);
+fprintf('FISTA \t\t\t residual=%1.4e \n', residual);
+fprintf('GD \t\t\t residual=%1.4e \n', residual_gd);
+fprintf('LDL (no pivot) \t\t residual=%1.4e \n', res_train_1);
+fprintf('LDL (with pivot) \t residual=%1.4e \n', res_train_2);
+fprintf('LDL (matlab) \t\t residual=%1.4e \n', res_train_3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%{
 figure();
 
 A = [2 5;1 7];
@@ -137,4 +138,4 @@ r9 = norm(bb-AA*y9)/norm(bb); fprintf('LDL \t (no pivoting): \t ----- \t\t resid
 if Problem.name == "quadratic"
     Problem.plot_legend('GD','HB','NADAM','FISTA','k-','r-','b-','g-');
 end
-
+%}
