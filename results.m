@@ -22,11 +22,9 @@ disp("Best result (GD):");
 
 load(sprintf('results/x%d.mat',pos));
 load(sprintf('results/losses%d.mat',pos));
-load(sprintf('results/rates%d.mat',pos));
 load(sprintf('results/norms%d.mat',pos));
 load(sprintf('results/residual%d.mat',pos));
 load(sprintf('results/losses_gd%d.mat',pos_gd));
-load(sprintf('results/rates_gd%d.mat',pos_gd));
 load(sprintf('results/norms_gd%d.mat',pos_gd));
 load(sprintf('results/residual_gd%d.mat',pos_gd));
 
@@ -48,10 +46,24 @@ load(sprintf('results/residual_gd%d.mat',pos_gd));
 % legend('training set','test set');
 % hold off;
 
+fstar1 = losses(end);
+e1 = abs(losses - fstar1);
+rates1 = zeros(length(e1)-3,1);
+for n=2:(length(e1)-2)
+    rates1(n-1) = log(e1(n+1))/log(e1(n));       
+end
+
+fstar2 = losses_gd(end);
+e2 = abs(losses_gd - fstar2);
+rates2 = zeros(length(e2)-3,1);
+for n=2:(length(e2)-2)
+    rates2(n-1) = log(e2(n+1))/log(e2(n));       
+end
+
 figure();
-plot(rates,'-','LineWidth',2);
+plot(rates1,'-','LineWidth',2);
 hold on;
-plot(rates_gd,'-','LineWidth',2);
+plot(rates2,'-','LineWidth',2);
 xlabel('t')
 ylabel('log|f(x_{t+1}) - f^*| / log|f(x_t) - f^*|');
 legend('FISTA','GD');

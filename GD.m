@@ -1,8 +1,8 @@
-function [x, i, losses, rates, norms] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, color, style, verbose)
+function [x, i, losses, norms] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, color, style, verbose)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
-    losses = []; rates = []; norms = [];
+    losses = []; norms = [];
 
     A = Problem.A;
     b = Problem.b;
@@ -53,13 +53,6 @@ function [x, i, losses, rates, norms] = GD(Problem, x0, eps, lr, m1, tau, MaxIte
             if verbose == 1
                 fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lr=%e \n' , i, v, ng, lr);
             end
-        end
-
-        fstar = losses(end);
-        e = abs(losses - fstar);
-        rates = zeros(length(e)-2,1);
-        for n = 2:(length(e)-2)     
-            rates(n-1) = log(e(n+1))/log(e(n));       
         end
     end
     

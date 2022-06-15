@@ -1,8 +1,8 @@
-function [x, i, losses, rates, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
+function [x, i, losses, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
 
 %function [x] = FISTA(p, x0, eps, t, MaxIter)
 %   Apply the FISTA algorithm.
-    losses = []; rates = []; norms = [];
+    losses = []; norms = [];
 
     A = Problem.A;
     b = Problem.b;
@@ -61,13 +61,6 @@ function [x, i, losses, rates, norms] = FISTA(Problem, x0, eps, MaxIter, color, 
         if verbose == 1
             fprintf('%4d\t v=%1.8e \t ng=%1.4e\n' , i, v, ng);
         end
-    end
-
-    fstar = losses(end);
-    e = abs(losses - fstar);
-    rates = zeros(length(e)-2,1);
-    for n = 2:(length(e)-2)     
-        rates(n-1) = log(e(n+1))/log(e(n));       
     end
     
 end
