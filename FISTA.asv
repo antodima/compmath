@@ -31,8 +31,14 @@ function [x, i, losses, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, 
     end
     while true        
         v = f(x0);       % value of the function at x
+        losses(end+1) = v;
         g = grad_f(x0);  % gradient at x
         ng = norm(g);   % norm of the gradient
+        diff = losses(end) - v;
+
+        if i > 1 && diff < 1e-6
+                break;
+        end
 
         if ng <= eps || i == MaxIter
            break;

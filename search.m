@@ -49,10 +49,12 @@ rmdir('results','s')
 mkdir('results')
 
 % hyperparameters
-hiddenSizes = 10:30:100;
-epochs = 3000;
-learningRates = [0.001, 0.01, 0.1];
-lambdas = [0.001, 0.01, 0.1];
+hiddenSizes = 25;
+lambdas = 0.1;
+eps = 20;
+
+epochs = [500,1000];
+learningRates = [0.0001, 0.001, 0.01, 0.1, 0.5];
 grid_fista = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
 grid_losses_fista = [];
 disp("Grid search FISTA:");
@@ -63,7 +65,6 @@ for g=1:size(grid_fista,1)
     lr = params(3);
     l = params(4);
     m = 0.9;
-    eps = 10;
     fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
     [Problem] = extreme(X, y, "sigmoid", h, l, false);
@@ -85,10 +86,8 @@ save('results/grid_fista.mat','grid_fista');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % hyperparameters for grid_gd
-hiddenSizes = 10:30:100;
-epochs = 1000;
-learningRates = [0.001,0.01];
-lambdas = [0.001,0.01];
+% epochs = 1000:2000:5000;
+% learningRates = [0.0001, 0.001, 0.01, 0.1, 0.5];
 grid_gd = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
 grid_losses_gd = [];
 disp("Grid search GD:");
@@ -100,7 +99,6 @@ for g=1:size(grid_gd,1)
     l = params(4);
     m = 0.9;
     tau = 0;
-    eps = 20;
     fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
     [Problem] = extreme(X, y, "sigmoid", h, l, false);
