@@ -9,7 +9,7 @@ cup_x_train = table2array(cup_train(1:1300,1:20));
 cup_y_train = table2array(cup_train(1:1300,21:22));
 
 %% problem setup
-h = 500; l = 0.1;
+h = 64; l = 0.1;
 
 X = cup_x_train; y = cup_y_train;
 [Problem] = extreme(X, y, "sigmoid", h, l, false);
@@ -23,9 +23,9 @@ save('results/fstar.mat','fstar');
 save('results/Problem.mat','Problem');
 
 %% search algorithm parameters
-eps = 0.0001;
-epochs = [5000];
-learningRates = [0.0001];
+eps = 1e-8;
+epochs = 5000;
+learningRates = 0.0001;
 
 grid_fista = gridSearch(h, epochs, learningRates, l);
 grid_losses_fista = [];

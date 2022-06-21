@@ -49,11 +49,11 @@ grid on;
 
 %% plot log-loss
 figure();
-semilogy(losses - fstar, '-', 'LineWidth',2);
+semilogy((losses - fstar)/abs(fstar), '-', 'LineWidth',2);
 hold on;
-semilogy(losses_gd - fstar, '-', 'LineWidth',2);
+semilogy((losses_gd - fstar)/abs(fstar), '-', 'LineWidth',2);
 xlabel('t')
-ylabel('log( f(x_t) - f^* )');
+ylabel('log( (f(x_t) - f^*) / |f^*| )');
 legend('FISTA','GD');
 hold off;
 grid on;
