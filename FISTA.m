@@ -1,4 +1,4 @@
-function [x, i, losses, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, verbose)
+function [x, i, losses, norms] = FISTA(Problem, x0, fstar, eps, MaxIter, color, style, verbose)
 
 %function [x] = FISTA(p, x0, eps, t, MaxIter)
 %   Apply the FISTA algorithm.
@@ -33,8 +33,9 @@ function [x, i, losses, norms] = FISTA(Problem, x0, eps, MaxIter, color, style, 
         v = f(x0);       % value of the function at x
         g = grad_f(x0);  % gradient at x
         ng = norm(g);   % norm of the gradient
-
-        if ng <= eps || i == MaxIter
+        
+        relative_error = (v - fstar)/abs(fstar);
+        if relative_error <= eps || i == MaxIter
            break;
         else
             i = i + 1;

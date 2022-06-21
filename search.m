@@ -1,61 +1,33 @@
-clear variables;
+clear variables; format short e;
+rmdir('results','s'); mkdir('results');
 
 %% load datasets
-monks1_train_filename = 'datasets/monks/monks-1.train';
-monks2_train_filename = 'datasets/monks/monks-2.train';
-monks3_train_filename = 'datasets/monks/monks-3.train';
-monks1_test_filename = 'datasets/monks/monks-1.test';
-monks2_test_filename = 'datasets/monks/monks-2.test';
-monks3_test_filename = 'datasets/monks/monks-3.test';
 cup_filename = 'datasets/cup/ml-cup.csv';
-
-monks1_train = readtable(monks1_train_filename,'FileType','text');
-monks1_x_train = table2array(monks1_train(:,1:6));
-monks1_y_train = table2array(monks1_train(:,7));
-
-monks1_test = readtable(monks1_test_filename,'FileType','text');
-monks1_x_test = table2array(monks1_test(:,1:6));
-monks1_y_test = table2array(monks1_test(:,7));
-
-monks2_train = readtable(monks2_train_filename,'FileType','text');
-monks2_x_train = table2array(monks2_train(:,1:6));
-monks2_y_train = table2array(monks2_train(:,7));
-
-monks2_test = readtable(monks2_test_filename,'FileType','text');
-monks2_x_test = table2array(monks2_test(:,1:6));
-monks2_y_test = table2array(monks2_test(:,7));
-
-monks3_train = readtable(monks3_train_filename,'FileType','text');
-monks3_x_train = table2array(monks3_train(:,1:6));
-monks3_y_train = table2array(monks3_train(:,7));
-
-monks3_test = readtable(monks3_test_filename,'FileType','text');
-monks3_x_test = table2array(monks3_test(:,1:6));
-monks3_y_test = table2array(monks3_test(:,7));
 
 cup_train = readtable(cup_filename,'FileType','text');
 cup_x_train = table2array(cup_train(1:1300,1:20));
 cup_y_train = table2array(cup_train(1:1300,21:22));
 
-cup_x_test = table2array(cup_train(1301:end,1:20));
-cup_y_test = table2array(cup_train(1301:end,21:22));
+%% problem setup
+h = 500; l = 0.1;
 
-%% the problem
 X = cup_x_train; y = cup_y_train;
+[Problem] = extreme(X, y, "sigmoid", h, l, false);
+A = Problem.A; b = Problem.b; x0 = Problem.W2;
+I = eye(size(A,2)); AA = A'*A+l*I; bb = A'*b;
 
-format short e;
+[L,D] = ldl(AA);
+xstar = L' \ ((L\bb) ./ diag(D)); fstar = Problem.cost(xstar);
+save('results/xstar.mat','xstar');
+save('results/fstar.mat','fstar');
+save('results/Problem.mat','Problem');
 
-rmdir('results','s')
-mkdir('results')
+%% search algorithm parameters
+eps = 0.0001;
+epochs = [5000];
+learningRates = [0.0001];
 
-% hyperparameters
-hiddenSizes = 25;
-lambdas = 0.1;
-eps = 20;
-
-epochs = [500,1000];
-learningRates = [0.0001, 0.001, 0.01, 0.1, 0.5];
-grid_fista = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
+grid_fista = gridSearch(h, epochs, learningRates, l);
 grid_losses_fista = [];
 disp("Grid search FISTA:");
 for g=1:size(grid_fista,1)
@@ -64,15 +36,10 @@ for g=1:size(grid_fista,1)
     MaxIter = params(2);
     lr = params(3);
     l = params(4);
-    m = 0.9;
-    fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
-    [Problem] = extreme(X, y, "sigmoid", h, l, false);
-    A = Problem.A; b = Problem.b; x0 = Problem.W2;
-    
-    tic; [x, iters, losses, norms] = FISTA(Problem, x0, eps, MaxIter, 'blue', '-', 0);
+    tic; [x, iters, losses, norms] = FISTA(Problem, x0, fstar, eps, MaxIter, 'blue', '-', 0);
     elapsed_time=toc;
-    fprintf('\t iteration=%d \t loss=%e \n', iters, losses(end));
+    fprintf('%d: MaxIter=%4d, eps=%1.4e, iterations=%d, loss=%e, f*=%e \n', g, MaxIter, eps, iters, losses(end), fstar);
     
     grid_losses_fista(end+1) = losses(end);
     save(sprintf('results/x%d.mat',g),'x');
@@ -86,9 +53,7 @@ save('results/grid_fista.mat','grid_fista');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % hyperparameters for grid_gd
-% epochs = 1000:2000:5000;
-% learningRates = [0.0001, 0.001, 0.01, 0.1, 0.5];
-grid_gd = gridSearch(hiddenSizes, epochs, learningRates, lambdas);
+grid_gd = gridSearch(h, epochs, learningRates, l);
 grid_losses_gd = [];
 disp("Grid search GD:");
 for g=1:size(grid_gd,1)
@@ -99,14 +64,10 @@ for g=1:size(grid_gd,1)
     l = params(4);
     m = 0.9;
     tau = 0;
-    fprintf('%d: h=%3d, MaxIter=%4d, lr=%1.4e, lambda=%1.4e\n', g, h, MaxIter, lr, l);
     
-    [Problem] = extreme(X, y, "sigmoid", h, l, false);
-    A = Problem.A; b = Problem.b; x0 = Problem.W2;
-    
-    tic; [x_gd, iters_gd, losses_gd, norms_gd] = GD(Problem, x0, eps, lr, m, tau, MaxIter, 'red', '-', 0);
+    tic; [x_gd, iters_gd, losses_gd, norms_gd] = GD(Problem, x0, fstar, eps, lr, m, tau, MaxIter, 'red', '-', 0);
     elapsed_time_gd=toc;
-    fprintf('\t iterations=%d \t loss=%e \n', iters_gd, losses_gd(end));
+    fprintf('%d: MaxIter=%4d, eps=%1.4e, lr=%1.4e, iterations=%d, loss=%e, f*=%e \n', g, MaxIter, eps, lr, iters_gd, losses_gd(end), fstar);
 
     grid_losses_gd(end+1) = losses_gd(end);
     save(sprintf('results/x_gd%d.mat',g),'x_gd');
@@ -121,13 +82,17 @@ save('results/grid_gd.mat','grid_gd');
 
 
 % best result
-disp("Best result (FISTA):");
-load('results/grid_losses_fista.mat'); load('results/grid_fista.mat');
-[value, pos] = min(grid_losses_fista); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_fista(pos,:), value); 
+fprintf('\nProblem parameters: hidden size=%3d, lambda=%1.4e \n', Problem.h, Problem.l);
 
-disp("Best result (GD):");
-load('results/grid_losses_gd.mat');load('results/grid_gd.mat'); 
-[value_gd, pos_gd] = min(grid_losses_gd); fprintf('h=%d, epochs=%d, lr=%1.4e, lambda=%1.4e, loss=%1.4e \n', grid_gd(pos_gd,:), value_gd); 
+load('results/grid_losses_fista.mat'); load('results/grid_fista.mat');
+[value, pos] = min(grid_losses_fista);
+params = grid_fista(pos,:); h = params(1); MaxIter = params(2); lr = params(3); l = params(4);
+fprintf('FISTA best result: iterations=%d, loss=%e, f*=%e \n', MaxIter, value, fstar);
+
+load('results/grid_losses_gd.mat'); load('results/grid_gd.mat'); 
+[value_gd, pos_gd] = min(grid_losses_gd);
+params_gd = grid_gd(pos_gd,:); h = params_gd(1); MaxIter = params_gd(2); lr = params_gd(3); l = params_gd(4);
+fprintf('GD best result: iterations=%d, lr=%e loss=%e, f*=%e \n', MaxIter, lr, value_gd, fstar);
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

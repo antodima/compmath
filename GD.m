@@ -1,4 +1,4 @@
-function [x, i, losses, norms] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, color, style, verbose)
+function [x, i, losses, norms] = GD(Problem, x0, fstar, eps, lr, m1, tau, MaxIter, color, style, verbose)
 
 %function [x] = GD(p, x0, eps, t, MaxIter)
 %   Apply the Steepest Gradient Descent algorithm.
@@ -26,7 +26,8 @@ function [x, i, losses, norms] = GD(Problem, x0, eps, lr, m1, tau, MaxIter, colo
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        if ng <= eps || i == MaxIter
+        relative_error = (v - fstar)/abs(fstar);
+        if relative_error <= eps || i == MaxIter
            break;
         else
             i = i + 1;
