@@ -75,11 +75,11 @@ res_train_3 = norm(bb-AA*y3)/norm(bb);
 hold off;
 
 disp("=====================================================================================");
-fprintf('Problem parameters: hidden size=%3d, lambda=%1.4e \n', Problem.h, Problem.l);
+fprintf('Problem parameters: hidden size=%3d, lambda=%1.4e \n', Problem.h, Problem.l); eps = 1e-4;
 params = grid_fista(pos,:); h = params(1); MaxIter = params(2); lr = params(3); l = params(4);
-fprintf('FISTA best result: \t iterations=%d/%d \t loss=%e \t f*=%e \n', length(losses), MaxIter, value, fstar);
+fprintf('FISTA best result: \t iterations=%d/%d \t expected it.=%d \t loss=%e \t f*=%e \n', length(losses), MaxIter, round(1/sqrt(eps)), value, fstar);
 params_gd = grid_gd(pos_gd,:); h = params_gd(1); MaxIter = params_gd(2); lr = params_gd(3); l = params_gd(4);
-fprintf('GD best result: \t iterations=%d/%d \t loss=%e \t f*=%e \t lr=%e \n', length(losses_gd), MaxIter, value_gd, fstar, lr);
+fprintf('GD best result: \t iterations=%d/%d \t expected it.=%d \t loss=%e \t f*=%e \t lr=%e \n', length(losses_gd), MaxIter, round(1/eps), value_gd, fstar, lr);
 
 disp("== CUP results ======================================================================");
 fprintf('FISTA \t\t\t | residual=%1.4e | time=%2.5f seconds | f_{t}=%1.4e | f*=%1.4e \n', residual, elapsed_time, losses(end), fstar);

@@ -23,8 +23,8 @@ save('results/fstar.mat','fstar');
 save('results/Problem.mat','Problem');
 
 %% search algorithm parameters
-eps = 1e-8;
-epochs = 5000;
+eps = 1e-4;
+epochs = 10000;
 learningRates = 1e-4;
 
 grid_fista = gridSearch(h, epochs, learningRates, l);
