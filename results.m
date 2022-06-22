@@ -72,6 +72,9 @@ res_train_1 = norm(bb-AA*y1)/norm(bb);
 res_train_2 = norm(bb-AA*y2)/norm(bb);
 res_train_3 = norm(bb-AA*y3)/norm(bb);
 
+xstar2 = L2' \ ((L2\bb) ./ diag(D2)); fstar2 = Problem.cost(xstar2);
+xstar3 = L3' \ ((L3\bb) ./ diag(D3)); fstar3 = Problem.cost(xstar3);
+
 hold off;
 
 disp("=====================================================================================");
@@ -84,7 +87,7 @@ fprintf('GD best result: \t iterations=%d/%d \t expected it.=%d \t loss=%e \t f*
 disp("== CUP results ======================================================================");
 fprintf('FISTA \t\t\t | residual=%1.4e | time=%2.5f seconds | f_{t}=%1.4e | f*=%1.4e \n', residual, elapsed_time, losses(end), fstar);
 fprintf('GD \t\t\t | residual=%1.4e | time=%2.5f seconds | f_{t}=%1.4e | f*=%1.4e \n', residual_gd, elapsed_time_gd, losses_gd(end), fstar);
-fprintf('LDL (matlab) \t\t | residual=%1.4e | time=%2.5f seconds \n', res_train_3, t3);
-fprintf('LDL (no pivot) \t\t | residual=%1.4e | time=%2.5f seconds \n', res_train_1, t1);
-fprintf('LDL (with pivot) \t | residual=%1.4e | time=%2.5f seconds \n', res_train_2, t2);
+fprintf('LDL (matlab) \t\t | residual=%1.4e | time=%2.5f seconds | f*=%1.4e \n', res_train_3, t3, fstar);
+fprintf('LDL (no pivot) \t\t | residual=%1.4e | time=%2.5f seconds | f*=%1.4e \n', res_train_1, t1, fstar2);
+fprintf('LDL (with pivot) \t | residual=%1.4e | time=%2.5f seconds | f*=%1.4e \n', res_train_2, t2, fstar3);
 disp("=====================================================================================");
