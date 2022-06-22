@@ -10,8 +10,11 @@ function [x, i, losses, norms] = GD(Problem, x0, fstar, eps, lr, m1, tau, MaxIte
     n = Problem.n;
     f = Problem.cost;
     grad_f = Problem.grad;
+    grad2_f = Problem.grad2;
     
     x = x0; % starting point
+    h = grad2_f();  % hessian
+    L = max(abs(eig(h)));
     
     if Problem.name == "quadratic"
         Problem.plot_surface();
@@ -50,7 +53,8 @@ function [x, i, losses, norms] = GD(Problem, x0, fstar, eps, lr, m1, tau, MaxIte
         else
             % [as, lsiters] = BacktrackingLS(f, grad_f, x, lr, m1, tau, 1000);
             % x = x - as*g;
-            x = x - lr*g;
+            %x = x - lr*g;
+            x = x - (1/L)*g;
 
             if verbose == 1
                 fprintf('%4d\t v=%1.8e \t ng=%1.4e \t lr=%e \n' , i, v, ng, lr);

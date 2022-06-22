@@ -1,3 +1,4 @@
+clear
 clear variables; format short e;
 rmdir('results','s'); mkdir('results');
 
@@ -9,7 +10,7 @@ cup_x_train = table2array(cup_train(1:1300,1:20));
 cup_y_train = table2array(cup_train(1:1300,21:22));
 
 %% problem setup
-h = 64; l = 0.1;
+h = 64; l = 0.01;
 
 X = cup_x_train; y = cup_y_train;
 [Problem] = extreme(X, y, "sigmoid", h, l, false);
