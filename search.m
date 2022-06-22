@@ -25,7 +25,7 @@ save('results/Problem.mat','Problem');
 %% search algorithm parameters
 eps = 1e-8;
 epochs = 5000;
-learningRates = 0.0001;
+learningRates = 1e-4;
 
 grid_fista = gridSearch(h, epochs, learningRates, l);
 grid_losses_fista = [];

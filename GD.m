@@ -26,8 +26,9 @@ function [x, i, losses, norms] = GD(Problem, x0, fstar, eps, lr, m1, tau, MaxIte
         g = grad_f(x);  % gradient at x
         ng = norm(g);   % norm of the gradient
         
-        relative_error = (v - fstar)/abs(fstar);
-        if relative_error <= eps || i == MaxIter
+        % relative_error = (v - fstar)/abs(fstar);
+        absolute_error = (v - fstar);
+        if absolute_error <= eps || i == MaxIter
            break;
         else
             i = i + 1;
