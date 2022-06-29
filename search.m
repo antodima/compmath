@@ -47,7 +47,7 @@ for g=1:size(grid_fista,1)
     save(sprintf('results/losses%d.mat',g),'losses');
     save(sprintf('results/norms%d.mat',g),'norms');
     save(sprintf('results/elapsed_time%d.mat',g),'elapsed_time');
-    residual = norm(b-A*x)/norm(b); save(sprintf('results/residual%d.mat',g),'residual');
+    AA = A'*A; bb = A'*b; residual = norm(bb-AA*x)/norm(bb); save(sprintf('results/residual%d.mat',g),'residual');
 end
 save('results/grid_losses_fista.mat','grid_losses_fista')
 save('results/grid_fista.mat','grid_fista');
@@ -75,8 +75,7 @@ for g=1:size(grid_gd,1)
     save(sprintf('results/losses_gd%d.mat',g),'losses_gd');
     save(sprintf('results/norms_gd%d.mat',g),'norms_gd');
     save(sprintf('results/elapsed_time_gd%d.mat',g),'elapsed_time_gd');
-    residual_gd = norm(b-A*x_gd)/norm(b); save(sprintf('results/residual_gd%d.mat',g),'residual_gd');
-    
+    AA = A'*A; bb = A'*b; residual_gd = norm(bb-AA*x)/norm(bb); save(sprintf('results/residual_gd%d.mat',g),'residual_gd');
 end
 save('results/grid_losses_gd.mat','grid_losses_gd')
 save('results/grid_gd.mat','grid_gd');
